@@ -3,9 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm'; // ต้องนำเข้�
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { User } from './entities/user.entity'; // นำเข้า Entity ของ User
+import { Role } from 'src/role/entities/role.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])], // เชื่อมโยง Repository
+  imports: [TypeOrmModule.forFeature([User, Role])], // เชื่อมโยง Repository
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService], // ส่งออก UserService ให้โมดูลอื่นใช้ได้

@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsNotEmpty } from 'class-validator'; // ใช้ class-validator สำหรับการ validate ข้อมูล
+import { IsString, IsEmail, IsNotEmpty, IsNumber } from 'class-validator'; // ใช้ class-validator สำหรับการ validate ข้อมูล
 
 export class CreateUserDto {
   @IsString()
@@ -16,4 +16,8 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   user_tel: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  role_id: number;
 }

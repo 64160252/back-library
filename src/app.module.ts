@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user/entities/user.entity';
+import { RoleModule } from './role/role.module';
+import { Role } from './role/entities/role.entity';
 
 @Module({
   imports: [
@@ -14,10 +16,11 @@ import { User } from './user/entities/user.entity';
       username: 'root',
       password: '', // ปล่อยว่างไว้หากไม่ได้ตั้งรหัสผ่าน
       database: 'testdb',
-      entities: [User],
-      synchronize: true, // ใช้ในโหมดพัฒนา
+      entities: [User, Role],
+      synchronize: false, // ใช้ในโหมดพัฒนา
     }),
     UserModule,
+    RoleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
