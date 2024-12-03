@@ -29,12 +29,15 @@ export class User {
   @ManyToOne(() => Role, (role) => role.users)
   role: Role;
 
+  @Column({ nullable: true })
+  refresh_token: string; // เก็บ Refresh Token
+
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
-  
+
   @DeleteDateColumn()
   deletedAt: Date;
 }

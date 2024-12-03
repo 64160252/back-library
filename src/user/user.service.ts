@@ -5,6 +5,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role } from 'src/role/entities/role.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -16,7 +17,7 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const { role_id, ...userData } = createUserDto;
+    const { role_id, user_password, ...userData } = createUserDto;
 
     // ตรวจสอบว่า role_id ถูกส่งมาหรือไม่
     if (!role_id) {
@@ -29,8 +30,17 @@ export class UserService {
       throw new Error(`Role with ID ${role_id} not found`);
     }
 
-    const user = this.userRepository.create({ ...userData, role });
-    return this.userRepository.save(user);
+    // แฮชรหัสผ่านก่อนบันทึก
+    const hashedPassword = await bcrypt.hash(user_password, 10);
+
+    // สร้าง user โดยใช้ข้อมูลที่ได้รับและเพิ่ม role
+    const user = this.userRepository.create({
+      ...userData,
+      role,
+      user_password: hashedPassword,
+    });
+
+    return this.userRepository.save(user); // บันทึกผู้ใช้ที่มีรหัสผ่านที่แฮชแล้ว
   }
 
   async findAll(): Promise<User[]> {
@@ -64,8 +74,41 @@ export class UserService {
       .getOne();
   }
 
+  // ตรวจสอบว่าผู้ใช้ถูกดึงออกมาจากฐานข้อมูลถูกต้อง
+  async findByUsername(username: string): Promise<User | null> {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.role', 'role')
+      .where('user.user_name = :username', { username })
+      .getOne();
+
+    console.log(user); // เพิ่ม log เพื่อตรวจสอบว่าได้ผู้ใช้ที่ถูกต้องหรือไม่
+    return user;
+  }
+
+  async updateRefreshToken(userId: number, refreshToken: string) {
+    const user = await this.userRepository.findOne({
+      where: { user_id: userId },
+    });
+    if (user) {
+      user.refresh_token = refreshToken;
+      await this.userRepository.save(user);
+    }
+  }
+
+  // ฟังก์ชันในการลบ refresh token
+  async removeRefreshToken(userId: number) {
+    const user = await this.userRepository.findOne({
+      where: { user_id: userId },
+    });
+    if (user) {
+      user.refresh_token = null; // ลบค่า refresh_token
+      await this.userRepository.save(user);
+    }
+  }
+
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    const { role_id, ...userData } = updateUserDto;
+    const { role_id, user_password, ...userData } = updateUserDto;
 
     const user = await this.findOne(id);
     if (!user) {
@@ -81,8 +124,13 @@ export class UserService {
       user.role = role;
     }
 
+    // หากมีการส่งรหัสผ่านใหม่มา ต้องแฮชรหัสผ่านก่อนอัปเดต
+    if (user_password) {
+      user.user_password = await bcrypt.hash(user_password, 10);
+    }
+
     Object.assign(user, userData); // อัปเดตข้อมูลที่เหลือ
-    return this.userRepository.save(user);
+    return this.userRepository.save(user); // บันทึกผู้ใช้ที่อัปเดต
   }
 
   async remove(id: number): Promise<void> {
