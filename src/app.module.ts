@@ -8,6 +8,9 @@ import { RoleModule } from './role/role.module';
 import { Role } from './role/entities/role.entity';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { StudentModule } from './student/student.module';
+import { TeacherModule } from './teacher/teacher.module';
+import { Student } from './student/entities/student.entity';
 
 @Module({
   imports: [
@@ -21,12 +24,14 @@ import { ConfigModule } from '@nestjs/config';
       username: 'root',
       password: '', // ปล่อยว่างไว้หากไม่ได้ตั้งรหัสผ่าน
       database: 'testdb',
-      entities: [User, Role],
-      synchronize: false, // ใช้ในโหมดพัฒนา
+      entities: [User, Role, Student],
+      synchronize: false,
     }),
     UserModule,
     RoleModule,
     AuthModule,
+    StudentModule,
+    TeacherModule,
   ],
   controllers: [AppController],
   providers: [AppService],
