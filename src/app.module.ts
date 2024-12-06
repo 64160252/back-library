@@ -11,6 +11,7 @@ import { ConfigModule } from '@nestjs/config';
 import { StudentModule } from './student/student.module';
 import { TeacherModule } from './teacher/teacher.module';
 import { Student } from './student/entities/student.entity';
+import { Teacher } from './teacher/entities/teacher.entity';
 
 @Module({
   imports: [
@@ -19,13 +20,13 @@ import { Student } from './student/entities/student.entity';
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
+      host: 'db', // ชื่อของ MySQL service ใน Docker Compose
       port: 3306,
       username: 'root',
-      password: '', // ปล่อยว่างไว้หากไม่ได้ตั้งรหัสผ่าน
+      password: 'rootpassword',
       database: 'testdb',
-      entities: [User, Role, Student],
-      synchronize: false,
+      entities: [User, Role, Student, Teacher],
+      synchronize: true,
     }),
     UserModule,
     RoleModule,
