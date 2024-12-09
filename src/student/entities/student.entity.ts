@@ -1,10 +1,12 @@
+import { Department } from 'src/department/entities/department.entity';
+import { Faculty } from 'src/faculty/entities/faculty.entity';
 import { User } from 'src/user/entities/user.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
-  Column,
   OneToOne,
   JoinColumn,
+  ManyToOne,
 } from 'typeorm';
 
 @Entity('students')
@@ -16,9 +18,10 @@ export class Student {
   @JoinColumn({ name: 'user_id' }) // เชื่อม Foreign Key
   user: User;
 
-  @Column({ nullable: true })
-  faculty: string; // ชื่อคณะ (เก็บเป็นข้อความ)
+  @ManyToOne(() => Faculty, (faculty) => faculty.students)
+  faculty: Faculty; // ชื่อคณะ (เก็บเป็นข้อความ)
 
-  @Column({ nullable: true })
-  department: string; // ชื่อสาขา (เก็บเป็นข้อความ)
+  @ManyToOne(() => Department, (department) => department.students)
+  @JoinColumn({ name: 'department_id' }) // ชื่อคอลัมน์ในฐานข้อมูล
+  department: Department;
 }

@@ -29,8 +29,6 @@ export class StudentService {
     // สร้าง student ด้วยข้อมูลที่ได้รับมา
     const student = this.studentRepository.create({
       user, // เชื่อมโยงกับ user
-      faculty: createStudentDto.faculty,
-      department: createStudentDto.department,
     });
 
     // บันทึกข้อมูล student ใน database

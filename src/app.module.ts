@@ -12,6 +12,10 @@ import { StudentModule } from './student/student.module';
 import { TeacherModule } from './teacher/teacher.module';
 import { Student } from './student/entities/student.entity';
 import { Teacher } from './teacher/entities/teacher.entity';
+import { FacultyModule } from './faculty/faculty.module';
+import { DepartmentModule } from './department/department.module';
+import { Faculty } from './faculty/entities/faculty.entity';
+import { Department } from './department/entities/department.entity';
 
 @Module({
   imports: [
@@ -25,7 +29,7 @@ import { Teacher } from './teacher/entities/teacher.entity';
       username: 'root',
       password: 'rootpassword',
       database: 'testdb',
-      entities: [User, Role, Student, Teacher],
+      entities: [User, Role, Student, Teacher, Faculty, Department],
       synchronize: true,
     }),
     UserModule,
@@ -33,6 +37,8 @@ import { Teacher } from './teacher/entities/teacher.entity';
     AuthModule,
     StudentModule,
     TeacherModule,
+    FacultyModule,
+    DepartmentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
