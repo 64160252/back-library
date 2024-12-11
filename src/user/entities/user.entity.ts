@@ -1,3 +1,5 @@
+import { Student } from 'src/all-role/student/entities/student.entity';
+import { Teacher } from 'src/all-role/teacher/entities/teacher.entity';
 import { Role } from 'src/role/entities/role.entity';
 import {
   Entity,
@@ -7,6 +9,7 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
   ManyToOne,
+  OneToOne,
 } from 'typeorm';
 
 @Entity('users')
@@ -28,6 +31,12 @@ export class User {
 
   @ManyToOne(() => Role, (role) => role.users)
   role: Role;
+
+  @OneToOne(() => Student, (student) => student.user)
+  student: Student;
+
+  @OneToOne(() => Teacher, (teacher) => teacher.user)
+  teacher: Teacher;
 
   @Column({ nullable: true })
   refresh_token: string; // เก็บ Refresh Token

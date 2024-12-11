@@ -1,5 +1,6 @@
 import { Faculty } from 'src/faculty/entities/faculty.entity';
-import { Student } from 'src/student/entities/student.entity';
+import { Student } from 'src/all-role/student/entities/student.entity';
+import { Teacher } from 'src/all-role/teacher/entities/teacher.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -19,6 +20,9 @@ export class Department {
 
   @OneToMany(() => Student, (student) => student.department)
   students: Student[]; // ชื่อคณะ (เก็บเป็นข้อความ)
+
+  @OneToMany(() => Teacher, (teacher) => teacher.department)
+  teachers: Teacher[]; // ชื่อคณะ (เก็บเป็นข้อความ)
 
   @ManyToOne(() => Faculty, (faculty) => faculty.departments) // ความสัมพันธ์กับ Faculty
   @JoinColumn({ name: 'faculty_id' }) // Foreign key ในตาราง departments

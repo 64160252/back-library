@@ -3,7 +3,7 @@ import { DepartmentService } from './department.service';
 import { DepartmentController } from './department.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Department } from './entities/department.entity';
-import { Student } from 'src/student/entities/student.entity';
+import { Student } from 'src/all-role/student/entities/student.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Department, Student])], // เชื่อมโยง Repository

@@ -3,7 +3,7 @@ import { FacultyService } from './faculty.service';
 import { FacultyController } from './faculty.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Faculty } from './entities/faculty.entity';
-import { Student } from 'src/student/entities/student.entity';
+import { Student } from 'src/all-role/student/entities/student.entity';
 import { Department } from 'src/department/entities/department.entity';
 
 @Module({
