@@ -1,5 +1,13 @@
 import { User } from 'src/user/entities/user.entity';
-import { Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('markets')
 export class Market {
@@ -9,4 +17,13 @@ export class Market {
   @OneToOne(() => User) // เชื่อมกับ User
   @JoinColumn({ name: 'user_id' }) // เชื่อม Foreign Key
   user: User;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

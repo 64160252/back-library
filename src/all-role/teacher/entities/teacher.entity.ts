@@ -7,6 +7,9 @@ import {
   OneToOne,
   JoinColumn,
   ManyToOne,
+  CreateDateColumn,
+  DeleteDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('teachers')
@@ -25,4 +28,13 @@ export class Teacher {
   @ManyToOne(() => Department, (department) => department.students)
   @JoinColumn({ name: 'department_id' }) // ชื่อคอลัมน์ในฐานข้อมูล
   department: Department;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

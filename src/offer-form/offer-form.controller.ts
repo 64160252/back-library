@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { OfferFormService } from './offer-form.service';
 import { CreateOfferFormDto } from './dto/create-offer-form.dto';
 import { UpdateOfferFormDto } from './dto/update-offer-form.dto';
@@ -23,7 +31,10 @@ export class OfferFormController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOfferFormDto: UpdateOfferFormDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateOfferFormDto: UpdateOfferFormDto,
+  ) {
     return this.offerFormService.update(+id, updateOfferFormDto);
   }
 

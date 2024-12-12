@@ -1,7 +1,7 @@
 import { Department } from 'src/department/entities/department.entity';
 import { Student } from 'src/all-role/student/entities/student.entity';
 import { Teacher } from 'src/all-role/teacher/entities/teacher.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity('faculties')
 export class Faculty {
@@ -19,4 +19,13 @@ export class Faculty {
 
   @OneToMany(() => Department, (department) => department.faculty)
   departments: Department[]; // ชื่อคณะ (เก็บเป็นข้อความ)
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 }
