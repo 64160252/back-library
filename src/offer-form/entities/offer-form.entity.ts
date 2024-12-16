@@ -1,8 +1,10 @@
+import { User } from 'src/user/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -36,8 +38,14 @@ export class OfferForm {
   @Column()
   book_quantity: number; // จำนวนเล่ม
 
+  @Column()
+  coupon_used: string;
+
   @Column({ type: 'text' })
   book_file: string;
+
+  @ManyToOne(() => User, (user) => user.OfferForms)
+  user: User;
 
   @CreateDateColumn()
   createdAt: Date;

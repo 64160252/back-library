@@ -17,10 +17,10 @@ export class StaffLibraryNorController {
     private readonly staffLibraryNorService: StaffLibraryNorService,
   ) {}
 
-  @Post()
-  create(@Body() createStaffLibraryNorDto: CreateStaffLibraryNorDto) {
-    return this.staffLibraryNorService.create(createStaffLibraryNorDto);
-  }
+  // @Post()
+  // create(@Body() createStaffLibraryNorDto: CreateStaffLibraryNorDto) {
+  //   return this.staffLibraryNorService.create(createStaffLibraryNorDto);
+  // }
 
   @Get()
   findAll() {

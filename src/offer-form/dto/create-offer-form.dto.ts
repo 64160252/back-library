@@ -36,6 +36,14 @@ export class CreateOfferFormDto {
   @IsPositive()
   book_quantity: number; // จำนวนเล่ม
 
+  @IsNotEmpty()
+  @IsString()
+  coupon_used: string;
+
   @IsOptional()
   book_file: any; // ไฟล์ (อัปโหลดรูปภาพ)
+
+  @IsNumber()
+  @IsNotEmpty()
+  user_id: number;
 }

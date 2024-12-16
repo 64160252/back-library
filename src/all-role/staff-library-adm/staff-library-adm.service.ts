@@ -20,34 +20,34 @@ export class StaffLibraryAdmService {
   ) {}
 
   // สร้าง StaffLibraryAdm
-  async create(createStaffLibraryAdmDto: CreateStaffLibraryAdmDto) {
-    const { user_id } = createStaffLibraryAdmDto;
+  // async create(createStaffLibraryAdmDto: CreateStaffLibraryAdmDto) {
+  //   const { user_id } = createStaffLibraryAdmDto;
 
-    // ตรวจสอบว่า User มีอยู่หรือไม่
-    const user = await this.userRepository.findOne({ where: { user_id } });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+  //   // ตรวจสอบว่า User มีอยู่หรือไม่
+  //   const user = await this.userRepository.findOne({ where: { user_id } });
+  //   if (!user) {
+  //     throw new NotFoundException('User not found');
+  //   }
 
-    // ตรวจสอบว่า User เชื่อมโยงกับ StaffLibraryAdm หรือไม่
-    const existingStaff = await this.staffLibraryAdmRepository.findOne({
-      where: { user: { user_id } },
-    });
+  //   // ตรวจสอบว่า User เชื่อมโยงกับ StaffLibraryAdm หรือไม่
+  //   const existingStaff = await this.staffLibraryAdmRepository.findOne({
+  //     where: { user: { user_id } },
+  //   });
 
-    if (existingStaff) {
-      throw new BadRequestException(
-        'This user is already linked to a StaffLibraryAdm',
-      );
-    }
+  //   if (existingStaff) {
+  //     throw new BadRequestException(
+  //       'This user is already linked to a StaffLibraryAdm',
+  //     );
+  //   }
 
-    // ถ้าไม่มีการเชื่อมโยงใด ๆ ก็สร้าง StaffLibraryAdm ใหม่
-    const staffLibraryAdm = this.staffLibraryAdmRepository.create({
-      user,
-    });
+  //   // ถ้าไม่มีการเชื่อมโยงใด ๆ ก็สร้าง StaffLibraryAdm ใหม่
+  //   const staffLibraryAdm = this.staffLibraryAdmRepository.create({
+  //     user,
+  //   });
 
-    // บันทึกข้อมูล StaffLibraryAdm ใน database
-    return await this.staffLibraryAdmRepository.save(staffLibraryAdm);
-  }
+  //   // บันทึกข้อมูล StaffLibraryAdm ใน database
+  //   return await this.staffLibraryAdmRepository.save(staffLibraryAdm);
+  // }
 
   // หา StaffLibraryAdm ทั้งหมด
   async findAll() {

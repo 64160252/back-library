@@ -20,27 +20,27 @@ export class StaffFacultyService {
   ) {}
 
   // สร้าง staffFaculty
-  async create(createStaffFacultyDto: CreateStaffFacultyDto) {
-    const { user_id } = createStaffFacultyDto;
+  // async create(createStaffFacultyDto: CreateStaffFacultyDto) {
+  //   const { user_id } = createStaffFacultyDto;
 
-    // ค้นหาข้อมูล user ที่มี user_id
-    const user = await this.userRepository.findOne({
-      where: { user_id },
-    });
+  //   // ค้นหาข้อมูล user ที่มี user_id
+  //   const user = await this.userRepository.findOne({
+  //     where: { user_id },
+  //   });
 
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+  //   if (!user) {
+  //     throw new NotFoundException('User not found');
+  //   }
 
-    // สร้าง staffFaculty ด้วยข้อมูลที่ได้รับมา
-    const staffFaculty = this.staffFacultyRepository.create({
-      user, // เชื่อมโยงกับ user
-      ...createStaffFacultyDto, // ใช้ข้อมูล DTO ที่ได้รับมา
-    });
+  //   // สร้าง staffFaculty ด้วยข้อมูลที่ได้รับมา
+  //   const staffFaculty = this.staffFacultyRepository.create({
+  //     user, // เชื่อมโยงกับ user
+  //     ...createStaffFacultyDto, // ใช้ข้อมูล DTO ที่ได้รับมา
+  //   });
 
-    // บันทึกข้อมูล staffFaculty
-    return await this.staffFacultyRepository.save(staffFaculty);
-  }
+  //   // บันทึกข้อมูล staffFaculty
+  //   return await this.staffFacultyRepository.save(staffFaculty);
+  // }
 
   // ค้นหาทุก staffFaculty
   async findAll() {

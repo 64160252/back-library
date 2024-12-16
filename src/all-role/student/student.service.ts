@@ -23,41 +23,41 @@ export class StudentService {
   ) {}
 
   // สร้าง student
-  async create(createStudentDto: CreateStudentDto) {
-    // ค้นหาข้อมูล user ที่มี user_id ที่ตรงกับที่ได้รับมา
-    const { user_id } = createStudentDto;
+  // async create(createStudentDto: CreateStudentDto) {
+  //   // ค้นหาข้อมูล user ที่มี user_id ที่ตรงกับที่ได้รับมา
+  //   const { user_id } = createStudentDto;
 
-    // ตรวจสอบว่า User มีอยู่หรือไม่
-    const user = await this.userRepository.findOne({ where: { user_id } });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+  //   // ตรวจสอบว่า User มีอยู่หรือไม่
+  //   const user = await this.userRepository.findOne({ where: { user_id } });
+  //   if (!user) {
+  //     throw new NotFoundException('User not found');
+  //   }
 
-    // ตรวจสอบว่า User เชื่อมโยงกับ Student หรือ Teacher แล้วหรือไม่
-    const existingStudent = await this.studentRepository.findOne({
-      where: { user: { user_id } },
-    });
+  //   // ตรวจสอบว่า User เชื่อมโยงกับ Student หรือ Teacher แล้วหรือไม่
+  //   const existingStudent = await this.studentRepository.findOne({
+  //     where: { user: { user_id } },
+  //   });
 
-    const existingTeacher = await this.teacherRepository.findOne({
-      where: { user: { user_id } },
-    });
+  //   const existingTeacher = await this.teacherRepository.findOne({
+  //     where: { user: { user_id } },
+  //   });
 
-    if (existingStudent) {
-      throw new BadRequestException('This user is already linked to a Student');
-    }
+  //   if (existingStudent) {
+  //     throw new BadRequestException('This user is already linked to a Student');
+  //   }
 
-    if (existingTeacher) {
-      throw new BadRequestException('This user is already linked to a Teacher');
-    }
+  //   if (existingTeacher) {
+  //     throw new BadRequestException('This user is already linked to a Teacher');
+  //   }
 
-    // ถ้าไม่มีการเชื่อมโยงใด ๆ ก็สร้าง Teacher ใหม่
-    const student = this.studentRepository.create({
-      user,
-    });
+  //   // ถ้าไม่มีการเชื่อมโยงใด ๆ ก็สร้าง Teacher ใหม่
+  //   const student = this.studentRepository.create({
+  //     user,
+  //   });
 
-    // บันทึกข้อมูล student ใน database
-    return await this.studentRepository.save(student);
-  }
+  //   // บันทึกข้อมูล student ใน database
+  //   return await this.studentRepository.save(student);
+  // }
 
   async findAll() {
     return await this.studentRepository

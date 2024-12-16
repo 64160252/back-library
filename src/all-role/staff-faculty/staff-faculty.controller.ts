@@ -15,10 +15,10 @@ import { UpdateStaffFacultyDto } from './dto/update-staff-faculty.dto';
 export class StaffFacultyController {
   constructor(private readonly staffFacultyService: StaffFacultyService) {}
 
-  @Post()
-  create(@Body() createStaffFacultyDto: CreateStaffFacultyDto) {
-    return this.staffFacultyService.create(createStaffFacultyDto);
-  }
+  // @Post()
+  // create(@Body() createStaffFacultyDto: CreateStaffFacultyDto) {
+  //   return this.staffFacultyService.create(createStaffFacultyDto);
+  // }
 
   @Get()
   findAll() {

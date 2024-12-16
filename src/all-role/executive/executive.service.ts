@@ -20,34 +20,34 @@ export class ExecutiveService {
   ) {}
 
   // สร้าง executive
-  async create(createExecutiveDto: CreateExecutiveDto) {
-    const { user_id } = createExecutiveDto;
+  // async create(createExecutiveDto: CreateExecutiveDto) {
+  //   const { user_id } = createExecutiveDto;
 
-    // ตรวจสอบว่า User มีอยู่หรือไม่
-    const user = await this.userRepository.findOne({ where: { user_id } });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+  //   // ตรวจสอบว่า User มีอยู่หรือไม่
+  //   const user = await this.userRepository.findOne({ where: { user_id } });
+  //   if (!user) {
+  //     throw new NotFoundException('User not found');
+  //   }
 
-    // ตรวจสอบว่า User เชื่อมโยงกับ Executive หรือไม่
-    const existingExecutive = await this.executiveRepository.findOne({
-      where: { user: { user_id } },
-    });
+  //   // ตรวจสอบว่า User เชื่อมโยงกับ Executive หรือไม่
+  //   const existingExecutive = await this.executiveRepository.findOne({
+  //     where: { user: { user_id } },
+  //   });
 
-    if (existingExecutive) {
-      throw new BadRequestException(
-        'This user is already linked to an Executive',
-      );
-    }
+  //   if (existingExecutive) {
+  //     throw new BadRequestException(
+  //       'This user is already linked to an Executive',
+  //     );
+  //   }
 
-    // ถ้าไม่มีการเชื่อมโยงใด ๆ ก็สร้าง Executive ใหม่
-    const executive = this.executiveRepository.create({
-      user,
-    });
+  //   // ถ้าไม่มีการเชื่อมโยงใด ๆ ก็สร้าง Executive ใหม่
+  //   const executive = this.executiveRepository.create({
+  //     user,
+  //   });
 
-    // บันทึกข้อมูล executive ใน database
-    return await this.executiveRepository.save(executive);
-  }
+  //   // บันทึกข้อมูล executive ใน database
+  //   return await this.executiveRepository.save(executive);
+  // }
 
   // หา executive ทั้งหมด
   async findAll() {

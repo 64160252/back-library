@@ -17,17 +17,17 @@ export class StaffLibraryNor {
   @PrimaryGeneratedColumn()
   staffs_library_nor_id: number;
 
-  @OneToOne(() => User, (user) => user.student, { cascade: true }) // เชื่อมกับ User
-  @JoinColumn({ name: 'user_id' })
-  user: User;
+  // @OneToOne(() => User, (user) => user.student, { cascade: true }) // เชื่อมกับ User
+  // @JoinColumn({ name: 'user_id' })
+  // user: User;
 
-  @ManyToOne(() => Faculty, (faculty) => faculty.students)
-  @JoinColumn({ name: 'faculty_id' }) // ชื่อคอลัมน์ในฐานข้อมูล
-  faculty: Faculty; // ชื่อคณะ (เก็บเป็นข้อความ)
+  // @ManyToOne(() => Faculty, (faculty) => faculty.students)
+  // @JoinColumn({ name: 'faculty_id' }) // ชื่อคอลัมน์ในฐานข้อมูล
+  // faculty: Faculty; // ชื่อคณะ (เก็บเป็นข้อความ)
 
-  @ManyToOne(() => Department, (department) => department.students)
-  @JoinColumn({ name: 'department_id' }) // ชื่อคอลัมน์ในฐานข้อมูล
-  department: Department;
+  // @ManyToOne(() => Department, (department) => department.students)
+  // @JoinColumn({ name: 'department_id' }) // ชื่อคอลัมน์ในฐานข้อมูล
+  // department: Department;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -19,39 +19,39 @@ export class TeacherService {
   ) {}
 
   // สร้าง teacher
-  async create(createTeacherDto: CreateTeacherDto) {
-    const { user_id } = createTeacherDto;
+  // async create(createTeacherDto: CreateTeacherDto) {
+  //   const { user_id } = createTeacherDto;
 
-    // ตรวจสอบว่า User มีอยู่หรือไม่
-    const user = await this.userRepository.findOne({ where: { user_id } });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+  //   // ตรวจสอบว่า User มีอยู่หรือไม่
+  //   const user = await this.userRepository.findOne({ where: { user_id } });
+  //   if (!user) {
+  //     throw new NotFoundException('User not found');
+  //   }
 
-    // ตรวจสอบว่า User เชื่อมโยงกับ Student หรือ Teacher แล้วหรือไม่
-    const existingStudent = await this.studentRepository.findOne({
-      where: { user: { user_id } },
-    });
+  //   // ตรวจสอบว่า User เชื่อมโยงกับ Student หรือ Teacher แล้วหรือไม่
+  //   const existingStudent = await this.studentRepository.findOne({
+  //     where: { user: { user_id } },
+  //   });
 
-    const existingTeacher = await this.teacherRepository.findOne({
-      where: { user: { user_id } },
-    });
+  //   const existingTeacher = await this.teacherRepository.findOne({
+  //     where: { user: { user_id } },
+  //   });
 
-    if (existingStudent) {
-      throw new BadRequestException('This user is already linked to a Student');
-    }
+  //   if (existingStudent) {
+  //     throw new BadRequestException('This user is already linked to a Student');
+  //   }
 
-    if (existingTeacher) {
-      throw new BadRequestException('This user is already linked to a Teacher');
-    }
+  //   if (existingTeacher) {
+  //     throw new BadRequestException('This user is already linked to a Teacher');
+  //   }
 
-    // ถ้าไม่มีการเชื่อมโยงใด ๆ ก็สร้าง Teacher ใหม่
-    const teacher = this.teacherRepository.create({
-      user,
-    });
+  //   // ถ้าไม่มีการเชื่อมโยงใด ๆ ก็สร้าง Teacher ใหม่
+  //   const teacher = this.teacherRepository.create({
+  //     user,
+  //   });
 
-    return await this.teacherRepository.save(teacher);
-  }
+  //   return await this.teacherRepository.save(teacher);
+  // }
 
   // หา teacher ทั้งหมด
   async findAll() {
