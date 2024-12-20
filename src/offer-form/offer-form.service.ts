@@ -1,21 +1,128 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateOfferFormDto } from './dto/create-offer-form.dto';
 import { UpdateOfferFormDto } from './dto/update-offer-form.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OfferForm } from './entities/offer-form.entity';
 import { Repository } from 'typeorm';
+import { User } from 'src/user/entities/user.entity';
+import { JwtService } from '@nestjs/jwt';
+import * as path from 'path';
+import * as fs from 'fs';
 
 @Injectable()
 export class OfferFormService {
   constructor(
     @InjectRepository(OfferForm)
     private readonly offerFormRepository: Repository<OfferForm>,
+    private readonly jwtService: JwtService,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   // Create
-  async create(createOfferFormDto: CreateOfferFormDto): Promise<OfferForm> {
-    const offerForm = this.offerFormRepository.create(createOfferFormDto);
-    return this.offerFormRepository.save(offerForm);
+  async create(
+    createOfferFormDto: CreateOfferFormDto,
+    req: Request,
+    files: { images?: Express.Multer.File[] },
+  ): Promise<OfferForm> {
+    const token = req.headers['authorization']?.split(' ')[1];
+    if (!token) {
+      throw new UnauthorizedException('Token not provided');
+    }
+
+    let decodedToken;
+    try {
+      if (!process.env.JWT_SECRET) {
+        throw new InternalServerErrorException(
+          'JWT_SECRET is not set in environment variables',
+        );
+      }
+
+      decodedToken = this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET,
+      });
+    } catch (err) {
+      console.error('Token verification error:', err);
+      throw new UnauthorizedException('Invalid token');
+    }
+
+    const userId = decodedToken.sub;
+    const user = await this.userRepository.findOne({
+      where: { user_id: userId },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException(`User not found with ID: ${userId}`);
+    }
+
+    const existingOfferForm = await this.offerFormRepository.findOne({
+      where: { ISBN: createOfferFormDto.ISBN },
+    });
+
+    if (existingOfferForm) {
+      throw new ConflictException(
+        `Offer with ISBN ${createOfferFormDto.ISBN} already exists`,
+      );
+    }
+
+    // สร้างโฟลเดอร์สำหรับเก็บไฟล์ภาพ
+    const uploadDir = path.join(__dirname, '..', '..', 'images');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir);
+    }
+
+    const imagePaths: string[] = [];
+    if (files?.images) {
+      for (const file of files.images) {
+        if (!file.buffer) {
+          throw new InternalServerErrorException(
+            `Invalid file: ${file.originalname}`,
+          );
+        }
+
+        // ตรวจสอบว่ามีไฟล์แล้วหรือไม่
+        const filePath = path.join(uploadDir, file.originalname);
+        try {
+          fs.writeFileSync(filePath, file.buffer); // บันทึกไฟล์ภาพลงในระบบ
+          imagePaths.push(path.join('images', file.originalname)); // เก็บพาธของไฟล์ไว้ในฐานข้อมูล
+        } catch (err) {
+          console.error('File write error:', err);
+          throw new InternalServerErrorException(
+            'Failed to save uploaded image',
+          );
+        }
+      }
+    }
+
+    // สร้าง offerForm และบันทึกข้อมูลลงในฐานข้อมูล
+    const offerForm = this.offerFormRepository.create({
+      ...createOfferFormDto,
+      user,
+      book_imgs: imagePaths, // เก็บพาธไฟล์ในฐานข้อมูล
+    });
+
+    try {
+      console.log('Saving offerForm:', offerForm);
+      await this.offerFormRepository.upsert(offerForm, ['ISBN']);
+      console.log('OfferForm saved successfully');
+      return offerForm;
+    } catch (error) {
+      console.error('Database error:', error);
+      if (
+        error.name === 'QueryFailedError' &&
+        error.message.includes('Duplicate entry')
+      ) {
+        throw new ConflictException(
+          `Offer with ISBN ${createOfferFormDto.ISBN} already exists`,
+        );
+      }
+      throw new InternalServerErrorException('Failed to create offer form');
+    }
   }
 
   // Find all
@@ -37,12 +144,11 @@ export class OfferFormService {
         'offerForms.book_subject',
         'offerForms.book_price',
         'offerForms.book_quantity',
-        'offerForms.book_file',
+        'offerForms.book_imgs',
       ])
       .where('offerForms.offer_form_id = :id', { id })
       .getOne();
   }
-
 
   // Update
   async update(

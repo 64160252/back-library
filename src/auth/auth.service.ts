@@ -26,9 +26,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid username or password');
     }
 
+    // ใช้ user_id ใน payload
     const payload = {
       username: user.user_name,
-      sub: user.user_id,
+      sub: user.user_id, // ใช้ sub แทน user_id เพื่อให้ JWT นั้นมีการตั้งค่าที่ถูกต้อง
       role: user.role.role_name, // เพิ่ม role ของผู้ใช้
     };
 

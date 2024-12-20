@@ -1,4 +1,11 @@
-import { IsISBN, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString } from 'class-validator';
+import {
+  IsISBN,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+} from 'class-validator';
 
 export class CreateOfferFormDto {
   @IsNotEmpty()
@@ -41,7 +48,7 @@ export class CreateOfferFormDto {
   coupon_used: string;
 
   @IsOptional()
-  book_file: any; // ไฟล์ (อัปโหลดรูปภาพ)
+  book_imgs: string;
 
   @IsNumber()
   @IsNotEmpty()

@@ -29,9 +29,15 @@ import { StaffLibraryAdm } from './all-role/staff-library-adm/entities/staff-lib
 import { StaffLibraryNor } from './all-role/staff-library-nor/entities/staff-library-nor.entity';
 import { OfferForm } from './offer-form/entities/offer-form.entity';
 import { OfferFormModule } from './offer-form/offer-form.module';
+// import { ServeStaticModule } from '@nestjs/serve-static';
+// import { join } from 'path';
 
 @Module({
   imports: [
+    // ServeStaticModule.forRoot({
+    //   rootPath: join(__dirname, '..', 'uploads'), // โฟลเดอร์เก็บไฟล์
+    //   serveRoot: '/uploads', // URL base path
+    // }),
     ConfigModule.forRoot({
       isGlobal: true, // เพื่อให้ ConfigModule ใช้งานได้ทั่วทั้งโปรเจกต์
     }),
@@ -54,7 +60,7 @@ import { OfferFormModule } from './offer-form/offer-form.module';
         StaffFaculty,
         StaffLibraryAdm,
         StaffLibraryNor,
-        OfferForm
+        OfferForm,
       ],
       synchronize: true,
     }),
@@ -71,7 +77,7 @@ import { OfferFormModule } from './offer-form/offer-form.module';
     ExecutiveModule,
     ECouponModule,
     MarketModule,
-    OfferFormModule
+    OfferFormModule,
   ],
   controllers: [AppController],
   providers: [AppService],

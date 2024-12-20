@@ -6,18 +6,46 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Request,
+  UnauthorizedException,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
 import { OfferFormService } from './offer-form.service';
 import { CreateOfferFormDto } from './dto/create-offer-form.dto';
 import { UpdateOfferFormDto } from './dto/update-offer-form.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @Controller('offer-form')
 export class OfferFormController {
   constructor(private readonly offerFormService: OfferFormService) {}
 
   @Post()
-  create(@Body() createOfferFormDto: CreateOfferFormDto) {
-    return this.offerFormService.create(createOfferFormDto);
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(
+    FileFieldsInterceptor([{ name: 'images', maxCount: 10 }], {
+      limits: { fileSize: 5 * 1024 * 1024 }, // ขนาดไฟล์สูงสุด 5MB
+      fileFilter: (req, file, callback) => {
+        if (!file.mimetype.startsWith('image/')) {
+          return callback(new Error('Only image files are allowed'), false);
+        }
+        callback(null, true);
+      },
+    }),
+  )
+  async create(
+    @Body() createOfferFormDto: CreateOfferFormDto,
+    @Request() req,
+    @UploadedFiles() files: { images?: Express.Multer.File[] },
+  ) {
+    const token = req.headers['authorization']?.split(' ')[1];
+    if (!token) {
+      throw new UnauthorizedException('Token not provided');
+    }
+    console.log('Uploaded files:', files); // ตรวจสอบว่าไฟล์มาถึง Service หรือไม่
+    return this.offerFormService.create(createOfferFormDto, req, files);
   }
 
   @Get()

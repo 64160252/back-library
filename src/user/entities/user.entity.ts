@@ -48,7 +48,7 @@ export class User {
   department: Department; // ชื่อสาขา (เก็บเป็นข้อความ)
 
   @OneToMany(() => OfferForm, (OfferForm) => OfferForm.user)
-  OfferForms: OfferForm;
+  OfferForms: OfferForm[];
 
   @ManyToOne(() => Role, (role) => role.users)
   @JoinColumn({ name: 'role_id' }) // ชื่อคอลัมน์ในฐานข้อมูล

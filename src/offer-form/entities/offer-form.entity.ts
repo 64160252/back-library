@@ -4,6 +4,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -26,7 +27,7 @@ export class OfferForm {
   @Column()
   published_year: number; // ปีพิมพ์
 
-  @Column()
+  @Column({ unique: true })
   ISBN: string; // ISBN
 
   @Column()
@@ -41,10 +42,11 @@ export class OfferForm {
   @Column()
   coupon_used: string;
 
-  @Column({ type: 'text' })
-  book_file: string;
+  @Column('simple-array', { nullable: true })
+  book_imgs: string[];
 
-  @ManyToOne(() => User, (user) => user.OfferForms)
+  @ManyToOne(() => User, (user) => user.OfferForms, { eager: true }) // เพิ่ม eager loading
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
   @CreateDateColumn()
