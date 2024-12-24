@@ -1,10 +1,10 @@
-// import { Executive } from 'src/all-role/executive/entities/executive.entity';
-// import { Market } from 'src/all-role/market/entities/market.entity';
-// import { StaffFaculty } from 'src/all-role/staff-faculty/entities/staff-faculty.entity';
-// import { StaffLibraryAdm } from 'src/all-role/staff-library-adm/entities/staff-library-adm.entity';
-// import { StaffLibraryNor } from 'src/all-role/staff-library-nor/entities/staff-library-nor.entity';
+import { Executive } from 'src/all-role/executive/entities/executive.entity';
+import { Market } from 'src/all-role/market/entities/market.entity';
+import { StaffFaculty } from 'src/all-role/staff-faculty/entities/staff-faculty.entity';
+import { StaffLibraryAdm } from 'src/all-role/staff-library-adm/entities/staff-library-adm.entity';
+import { StaffLibraryNor } from 'src/all-role/staff-library-nor/entities/staff-library-nor.entity';
 import { Student } from 'src/all-role/student/entities/student.entity';
-// import { Teacher } from 'src/all-role/teacher/entities/teacher.entity';
+import { Teacher } from 'src/all-role/teacher/entities/teacher.entity';
 import { Department } from 'src/department/entities/department.entity';
 import { Faculty } from 'src/faculty/entities/faculty.entity';
 import { OfferForm } from 'src/offer-form/entities/offer-form.entity';
@@ -26,6 +26,9 @@ import {
 export class User {
   @PrimaryGeneratedColumn()
   user_id: number;
+
+  @Column({ default: ' ' })
+  user_prefix: string;
 
   @Column({ unique: true })
   user_name: string;
@@ -57,23 +60,23 @@ export class User {
   @OneToOne(() => Student, (student) => student.user)
   student: Student;
 
-  // @OneToOne(() => Teacher, (teacher) => teacher.user)
-  // teacher: Teacher;
+  @OneToOne(() => Teacher, (teacher) => teacher.user)
+  teacher: Teacher;
 
-  // @OneToOne(() => Executive, (executive) => executive.user)
-  // executive: Executive;
+  @OneToOne(() => Executive, (executive) => executive.user)
+  executive: Executive;
 
-  // @OneToOne(() => StaffFaculty, (staffFaculty) => staffFaculty.user)
-  // staffFaculty: StaffFaculty;
+  @OneToOne(() => StaffFaculty, (staffFaculty) => staffFaculty.user)
+  staffFaculty: StaffFaculty;
 
-  // @OneToOne(() => StaffLibraryAdm, (staffLibraryAdm) => staffLibraryAdm.user)
-  // staffLibraryAdm: StaffLibraryAdm;
+  @OneToOne(() => StaffLibraryAdm, (staffLibraryAdm) => staffLibraryAdm.user)
+  staffLibraryAdm: StaffLibraryAdm;
 
-  // @OneToOne(() => StaffLibraryNor, (staffLibraryNor) => staffLibraryNor.user)
-  // staffLibraryNor: StaffLibraryNor;
+  @OneToOne(() => StaffLibraryNor, (staffLibraryNor) => staffLibraryNor.user)
+  staffLibraryNor: StaffLibraryNor;
 
-  // @OneToOne(() => Market, (market) => market.user)
-  // market: Market;
+  @OneToOne(() => Market, (market) => market.user)
+  market: Market;
 
   @Column({ nullable: true })
   refresh_token: string; // เก็บ Refresh Token

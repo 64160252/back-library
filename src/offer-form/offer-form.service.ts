@@ -13,6 +13,7 @@ import { User } from 'src/user/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import * as path from 'path';
 import * as fs from 'fs';
+import { Market } from 'src/all-role/market/entities/market.entity';
 
 @Injectable()
 export class OfferFormService {
@@ -22,6 +23,8 @@ export class OfferFormService {
     private readonly jwtService: JwtService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Market)
+    private readonly marketRepository: Repository<Market>,
   ) {}
 
   // Create
@@ -54,6 +57,7 @@ export class OfferFormService {
     const userId = decodedToken.sub;
     const user = await this.userRepository.findOne({
       where: { user_id: userId },
+      relations: ['role', 'faculty', 'department'],
     });
 
     if (!user) {
@@ -71,9 +75,9 @@ export class OfferFormService {
     }
 
     // สร้างโฟลเดอร์สำหรับเก็บไฟล์ภาพ
-    const uploadDir = path.join(__dirname, '..', '..', 'images');
+    const uploadDir = path.join(__dirname, '..', 'src', 'images'); // เปลี่ยนเป็น src/images
     if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir);
+      fs.mkdirSync(uploadDir, { recursive: true }); // สร้างโฟลเดอร์ขึ้นมา ถ้าไม่มี
     }
 
     const imagePaths: string[] = [];
@@ -89,7 +93,7 @@ export class OfferFormService {
         const filePath = path.join(uploadDir, file.originalname);
         try {
           fs.writeFileSync(filePath, file.buffer); // บันทึกไฟล์ภาพลงในระบบ
-          imagePaths.push(path.join('images', file.originalname)); // เก็บพาธของไฟล์ไว้ในฐานข้อมูล
+          imagePaths.push(path.join('images', file.originalname));
         } catch (err) {
           console.error('File write error:', err);
           throw new InternalServerErrorException(
@@ -102,6 +106,16 @@ export class OfferFormService {
     // สร้าง offerForm และบันทึกข้อมูลลงในฐานข้อมูล
     const offerForm = this.offerFormRepository.create({
       ...createOfferFormDto,
+      user_prefix: createOfferFormDto.user_prefix || user.user_prefix || '-',
+      user_name: user.user_name,
+      role: user.role,
+      user_email: user.user_email,
+      user_tel: user.user_tel,
+      faculty: user.faculty,
+      department: user.department,
+      market: await this.marketRepository.findOne({
+        where: { market_id: createOfferFormDto.market_id },
+      }),
       user,
       book_imgs: imagePaths, // เก็บพาธไฟล์ในฐานข้อมูล
     });

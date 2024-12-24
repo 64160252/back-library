@@ -13,6 +13,13 @@ import { Role } from 'src/role/entities/role.entity';
 import * as bcrypt from 'bcryptjs';
 import { Faculty } from 'src/faculty/entities/faculty.entity';
 import { Department } from 'src/department/entities/department.entity';
+import { Student } from 'src/all-role/student/entities/student.entity';
+import { Teacher } from 'src/all-role/teacher/entities/teacher.entity';
+import { Executive } from 'src/all-role/executive/entities/executive.entity';
+import { StaffLibraryAdm } from 'src/all-role/staff-library-adm/entities/staff-library-adm.entity';
+import { StaffLibraryNor } from 'src/all-role/staff-library-nor/entities/staff-library-nor.entity';
+import { StaffFaculty } from 'src/all-role/staff-faculty/entities/staff-faculty.entity';
+import { Market } from 'src/all-role/market/entities/market.entity';
 
 @Injectable()
 export class UserService {
@@ -25,6 +32,20 @@ export class UserService {
     private readonly facultyRepository: Repository<Faculty>,
     @InjectRepository(Department)
     private readonly departmentRepository: Repository<Department>,
+    @InjectRepository(Student)
+    private readonly studentRepository: Repository<Student>,
+    @InjectRepository(Teacher)
+    private readonly teacherRepository: Repository<Teacher>,
+    @InjectRepository(Executive)
+    private readonly executiveRepository: Repository<Executive>,
+    @InjectRepository(StaffLibraryAdm)
+    private readonly staffLibraryAdmRepository: Repository<StaffLibraryAdm>,
+    @InjectRepository(StaffLibraryNor)
+    private readonly staffLibraryNorRepository: Repository<StaffLibraryNor>,
+    @InjectRepository(StaffFaculty)
+    private readonly staffFacultyRepository: Repository<StaffFaculty>,
+    @InjectRepository(Market)
+    private readonly marketRepository: Repository<Market>,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -35,7 +56,7 @@ export class UserService {
       user_email,
       user_name,
       user_tel,
-      user_password, // รหัสผ่านที่รับเข้ามา
+      user_password,
       ...userData
     } = createUserDto;
 
@@ -129,7 +150,7 @@ export class UserService {
       }
 
       // เข้ารหัสรหัสผ่านด้วย bcrypt
-      const saltRounds = 10; // จำนวนรอบของการเข้ารหัส
+      const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(user_password, saltRounds);
 
       // สร้าง User
@@ -138,15 +159,79 @@ export class UserService {
         user_email,
         user_name,
         user_tel,
-        user_password: hashedPassword, // บันทึกรหัสผ่านที่เข้ารหัสแล้ว
+        user_password: hashedPassword,
         faculty: facultyEntity,
         department: departmentEntity,
         role: roleEntity,
       });
 
-      return await this.userRepository.save(user);
+      const savedUser = await this.userRepository.save(user);
+
+      // บันทึกข้อมูลลงตาม role
+      if (roleEntity.role_name === 'Student' || roleEntity.role_id === 1) {
+        const student = this.studentRepository.create({
+          user: savedUser, // เชื่อมโยงกับ User ที่สร้างไว้
+        });
+
+        await this.studentRepository.save(student);
+      } else if (
+        roleEntity.role_name === 'Teacher' ||
+        roleEntity.role_id === 2
+      ) {
+        const teacher = this.teacherRepository.create({
+          user: savedUser, // เชื่อมโยงกับ User ที่สร้างไว้
+        });
+
+        await this.teacherRepository.save(teacher);
+      } else if (
+        roleEntity.role_name === 'Executive' ||
+        roleEntity.role_id === 3
+      ) {
+        const executive = this.executiveRepository.create({
+          user: savedUser, // เชื่อมโยงกับ User ที่สร้างไว้
+        });
+
+        await this.executiveRepository.save(executive);
+      } else if (
+        roleEntity.role_name === 'StaffLibraryNor' ||
+        roleEntity.role_id === 4
+      ) {
+        const staffLibraryNor = this.staffLibraryNorRepository.create({
+          user: savedUser, // เชื่อมโยงกับ User ที่สร้างไว้
+        });
+
+        await this.staffLibraryNorRepository.save(staffLibraryNor);
+      } else if (
+        roleEntity.role_name === 'StaffLibraryAdm' ||
+        roleEntity.role_id === 5
+      ) {
+        const staffLibraryAdm = this.staffLibraryAdmRepository.create({
+          user: savedUser, // เชื่อมโยงกับ User ที่สร้างไว้
+        });
+
+        await this.staffLibraryAdmRepository.save(staffLibraryAdm);
+      } else if (
+        roleEntity.role_name === 'StaffFaculty' ||
+        roleEntity.role_id === 6
+      ) {
+        const staffFaculty = this.staffFacultyRepository.create({
+          user: savedUser, // เชื่อมโยงกับ User ที่สร้างไว้
+        });
+
+        await this.staffFacultyRepository.save(staffFaculty);
+      } else if (
+        roleEntity.role_name === 'Market' ||
+        roleEntity.role_id === 7
+      ) {
+        const market = this.marketRepository.create({
+          user: savedUser, // เชื่อมโยงกับ User ที่สร้างไว้
+        });
+
+        await this.marketRepository.save(market);
+      }
+
+      return savedUser;
     } catch (error) {
-      // หาก Error เป็น HTTP Exception (เช่น Conflict หรือ BadRequest) ให้โยนกลับไป
       if (
         error instanceof BadRequestException ||
         error instanceof ConflictException
@@ -154,7 +239,6 @@ export class UserService {
         throw error;
       }
 
-      // หากเป็น Error อื่น ให้แปลงเป็น Internal Server Error
       throw new BadRequestException(`User creation failed: ${error.message}`);
     }
   }
@@ -206,6 +290,13 @@ export class UserService {
 
     console.log(user); // เพิ่ม log เพื่อตรวจสอบว่าได้ผู้ใช้ที่ถูกต้องหรือไม่
     return user;
+  }
+
+  async findOneByUsername(username: string): Promise<User | undefined> {
+    return this.userRepository.findOne({
+      where: { user_name: username },
+      relations: ['role'],
+    });
   }
 
   async updateRefreshToken(userId: number, refreshToken: string) {

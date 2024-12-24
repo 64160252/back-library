@@ -15,10 +15,10 @@ import { UpdateExecutiveDto } from './dto/update-executive.dto';
 export class ExecutiveController {
   constructor(private readonly executiveService: ExecutiveService) {}
 
-  // @Post()
-  // create(@Body() createExecutiveDto: CreateExecutiveDto) {
-  //   return this.executiveService.create(createExecutiveDto);
-  // }
+  @Post()
+  create(@Body() createExecutiveDto: CreateExecutiveDto) {
+    return this.executiveService.create(createExecutiveDto);
+  }
 
   @Get()
   findAll() {

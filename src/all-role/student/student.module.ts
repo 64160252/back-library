@@ -6,12 +6,9 @@ import { Student } from './entities/student.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Faculty } from 'src/faculty/entities/faculty.entity';
 import { Department } from 'src/department/entities/department.entity';
-import { Teacher } from '../teacher/entities/teacher.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Student, Teacher, User, Faculty, Department]),
-  ], // เชื่อมโยง Repository
+  imports: [TypeOrmModule.forFeature([Student, User, Faculty, Department])], // เชื่อมโยง Repository
   controllers: [StudentController],
   providers: [StudentService],
   exports: [StudentService], // ส่งออก UserService ให้โมดูลอื่นใช้ได้

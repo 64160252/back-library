@@ -19,28 +19,19 @@ export class StaffFacultyService {
     private readonly userRepository: Repository<User>, // เชื่อมโยงกับ User
   ) {}
 
-  // สร้าง staffFaculty
-  // async create(createStaffFacultyDto: CreateStaffFacultyDto) {
-  //   const { user_id } = createStaffFacultyDto;
+  async create(
+    createStaffFacultyDto: CreateStaffFacultyDto,
+  ): Promise<StaffFaculty> {
+    // เพิ่ม user หรือ properties อื่น ๆ ที่จำเป็น
+    const staffFaculty = this.staffFacultyRepository.create({
+      ...createStaffFacultyDto, // รวมข้อมูลจาก DTO ที่ได้รับ
+      user: { user_id: createStaffFacultyDto.user_id }, // ถ้าจำเป็นต้องเชื่อมโยงกับ User (ในกรณีนี้อาจเป็น ID)
+      createdAt: new Date(), // เพิ่ม createdAt (หรือสามารถใช้ default value ได้ถ้ามีใน entity)
+      updatedAt: new Date(), // เพิ่ม updatedAt (เช่นเดียวกัน)
+    });
 
-  //   // ค้นหาข้อมูล user ที่มี user_id
-  //   const user = await this.userRepository.findOne({
-  //     where: { user_id },
-  //   });
-
-  //   if (!user) {
-  //     throw new NotFoundException('User not found');
-  //   }
-
-  //   // สร้าง staffFaculty ด้วยข้อมูลที่ได้รับมา
-  //   const staffFaculty = this.staffFacultyRepository.create({
-  //     user, // เชื่อมโยงกับ user
-  //     ...createStaffFacultyDto, // ใช้ข้อมูล DTO ที่ได้รับมา
-  //   });
-
-  //   // บันทึกข้อมูล staffFaculty
-  //   return await this.staffFacultyRepository.save(staffFaculty);
-  // }
+    return this.staffFacultyRepository.save(staffFaculty);
+  }
 
   // ค้นหาทุก staffFaculty
   async findAll() {

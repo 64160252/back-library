@@ -11,6 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
+import { OfferForm } from 'src/offer-form/entities/offer-form.entity';
 
 @Entity('departments')
 export class Department {
@@ -22,6 +23,9 @@ export class Department {
 
   @OneToMany(() => User, (user) => user.department)
   users: User[]; // ชื่อคณะ (เก็บเป็นข้อความ)
+
+  @OneToMany(() => OfferForm, (OfferForm) => OfferForm.department)
+  OfferForms: OfferForm[];
 
   @ManyToOne(() => Faculty, (faculty) => faculty.departments) // ความสัมพันธ์กับ Faculty
   @JoinColumn({ name: 'faculty_id' }) // Foreign key ในตาราง departments
@@ -35,4 +39,5 @@ export class Department {
 
   @DeleteDateColumn()
   deletedAt: Date;
+  students: any;
 }

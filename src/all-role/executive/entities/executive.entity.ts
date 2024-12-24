@@ -17,17 +17,9 @@ export class Executive {
   @PrimaryGeneratedColumn()
   executive_id: number;
 
-  // @OneToOne(() => User, (user) => user.student, { cascade: true }) // เชื่อมกับ User
-  // @JoinColumn({ name: 'user_id' })
-  // user: User;
-
-  // @ManyToOne(() => Faculty, (faculty) => faculty.students)
-  // @JoinColumn({ name: 'faculty_id' }) // ชื่อคอลัมน์ในฐานข้อมูล
-  // faculty: Faculty; // ชื่อคณะ (เก็บเป็นข้อความ)
-
-  // @ManyToOne(() => Department, (department) => department.students)
-  // @JoinColumn({ name: 'department_id' }) // ชื่อคอลัมน์ในฐานข้อมูล
-  // department: Department;
+  @OneToOne(() => User, (user) => user.student, { cascade: true }) // เชื่อมกับ User
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 
   @CreateDateColumn()
   createdAt: Date;

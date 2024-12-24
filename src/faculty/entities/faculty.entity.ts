@@ -1,4 +1,5 @@
 import { Department } from 'src/department/entities/department.entity';
+import { OfferForm } from 'src/offer-form/entities/offer-form.entity';
 import { User } from 'src/user/entities/user.entity';
 import {
   Entity,
@@ -21,6 +22,9 @@ export class Faculty {
   @OneToMany(() => User, (user) => user.faculty)
   users: User[]; // ชื่อคณะ (เก็บเป็นข้อความ)
 
+  @OneToMany(() => OfferForm, (OfferForm) => OfferForm.faculty)
+  OfferForms: OfferForm[];
+
   @OneToMany(() => Department, (department) => department.faculty)
   departments: Department[]; // ชื่อคณะ (เก็บเป็นข้อความ)
 
@@ -32,4 +36,5 @@ export class Faculty {
 
   @DeleteDateColumn()
   deletedAt: Date;
+  students: any;
 }

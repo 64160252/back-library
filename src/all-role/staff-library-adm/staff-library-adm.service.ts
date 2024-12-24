@@ -19,35 +19,19 @@ export class StaffLibraryAdmService {
     private readonly userRepository: Repository<User>, // ใช้ Repository ของ User
   ) {}
 
-  // สร้าง StaffLibraryAdm
-  // async create(createStaffLibraryAdmDto: CreateStaffLibraryAdmDto) {
-  //   const { user_id } = createStaffLibraryAdmDto;
+  async create(
+    createStaffLibraryAdmDto: CreateStaffLibraryAdmDto,
+  ): Promise<StaffLibraryAdm> {
+    // เพิ่ม user หรือ properties อื่น ๆ ที่จำเป็น
+    const staffLibraryAdm = this.staffLibraryAdmRepository.create({
+      ...createStaffLibraryAdmDto, // รวมข้อมูลจาก DTO ที่ได้รับ
+      user: { user_id: createStaffLibraryAdmDto.user_id }, // ถ้าจำเป็นต้องเชื่อมโยงกับ User (ในกรณีนี้อาจเป็น ID)
+      createdAt: new Date(), // เพิ่ม createdAt (หรือสามารถใช้ default value ได้ถ้ามีใน entity)
+      updatedAt: new Date(), // เพิ่ม updatedAt (เช่นเดียวกัน)
+    });
 
-  //   // ตรวจสอบว่า User มีอยู่หรือไม่
-  //   const user = await this.userRepository.findOne({ where: { user_id } });
-  //   if (!user) {
-  //     throw new NotFoundException('User not found');
-  //   }
-
-  //   // ตรวจสอบว่า User เชื่อมโยงกับ StaffLibraryAdm หรือไม่
-  //   const existingStaff = await this.staffLibraryAdmRepository.findOne({
-  //     where: { user: { user_id } },
-  //   });
-
-  //   if (existingStaff) {
-  //     throw new BadRequestException(
-  //       'This user is already linked to a StaffLibraryAdm',
-  //     );
-  //   }
-
-  //   // ถ้าไม่มีการเชื่อมโยงใด ๆ ก็สร้าง StaffLibraryAdm ใหม่
-  //   const staffLibraryAdm = this.staffLibraryAdmRepository.create({
-  //     user,
-  //   });
-
-  //   // บันทึกข้อมูล StaffLibraryAdm ใน database
-  //   return await this.staffLibraryAdmRepository.save(staffLibraryAdm);
-  // }
+    return this.staffLibraryAdmRepository.save(staffLibraryAdm);
+  }
 
   // หา StaffLibraryAdm ทั้งหมด
   async findAll() {

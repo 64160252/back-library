@@ -29,15 +29,15 @@ import { StaffLibraryAdm } from './all-role/staff-library-adm/entities/staff-lib
 import { StaffLibraryNor } from './all-role/staff-library-nor/entities/staff-library-nor.entity';
 import { OfferForm } from './offer-form/entities/offer-form.entity';
 import { OfferFormModule } from './offer-form/offer-form.module';
-// import { ServeStaticModule } from '@nestjs/serve-static';
-// import { join } from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
-    // ServeStaticModule.forRoot({
-    //   rootPath: join(__dirname, '..', 'uploads'), // โฟลเดอร์เก็บไฟล์
-    //   serveRoot: '/uploads', // URL base path
-    // }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'src', 'images'), // ตั้งค่าเส้นทางไปยัง 'src/images'
+      serveRoot: '/images', // ตั้งค่า URL ที่ใช้เรียกไฟล์
+    }),
     ConfigModule.forRoot({
       isGlobal: true, // เพื่อให้ ConfigModule ใช้งานได้ทั่วทั้งโปรเจกต์
     }),
@@ -46,7 +46,7 @@ import { OfferFormModule } from './offer-form/offer-form.module';
       host: 'db', // ชื่อของ MySQL service ใน Docker Compose
       port: 3306,
       username: 'root',
-      password: 'rootpassword',
+      password: '1234',
       database: 'testdb',
       entities: [
         User,

@@ -1,4 +1,5 @@
 import {
+  IsEmail,
   IsISBN,
   IsNotEmpty,
   IsNumber,
@@ -8,9 +9,37 @@ import {
 } from 'class-validator';
 
 export class CreateOfferFormDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  market_name: string; // ชื่อร้านค้า
+  user_prefix: string;
+
+  @IsString()
+  @IsNotEmpty()
+  user_name: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  role_id: number;
+
+  @IsEmail()
+  @IsNotEmpty()
+  user_email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  user_tel: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  faculty_id: number;
+
+  @IsString()
+  @IsNotEmpty()
+  department_id: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  market_id: number; // ชื่อร้านค้า
 
   @IsNotEmpty()
   @IsString()
@@ -48,7 +77,7 @@ export class CreateOfferFormDto {
   coupon_used: string;
 
   @IsOptional()
-  book_imgs: string;
+  book_imgs: string[];
 
   @IsNumber()
   @IsNotEmpty()

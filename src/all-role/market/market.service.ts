@@ -16,23 +16,16 @@ export class MarketService {
   ) {}
 
   // สร้าง market
-  async create(createMarketDto: CreateMarketDto) {
-    // ค้นหาข้อมูล user ที่มี user_id ที่ตรงกับที่ได้รับมา
-    const user = await this.userRepository.findOne({
-      where: { user_id: createMarketDto.user_id },
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    // สร้าง student ด้วยข้อมูลที่ได้รับมา
+  async create(createMarketDto: CreateMarketDto): Promise<Market> {
+    // เพิ่ม user หรือ properties อื่น ๆ ที่จำเป็น
     const market = this.marketRepository.create({
-      user, // เชื่อมโยงกับ user
+      ...createMarketDto, // รวมข้อมูลจาก DTO ที่ได้รับ
+      user: { user_id: createMarketDto.user_id }, // ถ้าจำเป็นต้องเชื่อมโยงกับ User (ในกรณีนี้อาจเป็น ID)
+      createdAt: new Date(), // เพิ่ม createdAt (หรือสามารถใช้ default value ได้ถ้ามีใน entity)
+      updatedAt: new Date(), // เพิ่ม updatedAt (เช่นเดียวกัน)
     });
 
-    // บันทึกข้อมูล student ใน database
-    return await this.marketRepository.save(market);
+    return this.marketRepository.save(market);
   }
 
   // ค้นหาทุก market

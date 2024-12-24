@@ -1,3 +1,4 @@
+import { OfferForm } from 'src/offer-form/entities/offer-form.entity';
 import { User } from 'src/user/entities/user.entity';
 import {
   Column,
@@ -19,6 +20,9 @@ export class Role {
 
   @OneToMany(() => User, (user) => user.role)
   users: User[];
+
+  @OneToMany(() => OfferForm, (OfferForm) => OfferForm.role)
+  OfferForms: OfferForm[];
 
   @CreateDateColumn()
   createdAt: Date;

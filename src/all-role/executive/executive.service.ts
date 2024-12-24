@@ -19,35 +19,17 @@ export class ExecutiveService {
     private readonly userRepository: Repository<User>, // ใช้ Repository ของ User
   ) {}
 
-  // สร้าง executive
-  // async create(createExecutiveDto: CreateExecutiveDto) {
-  //   const { user_id } = createExecutiveDto;
+  async create(createExecutiveDto: CreateExecutiveDto): Promise<Executive> {
+    // เพิ่ม user หรือ properties อื่น ๆ ที่จำเป็น
+    const executive = this.executiveRepository.create({
+      ...createExecutiveDto, // รวมข้อมูลจาก DTO ที่ได้รับ
+      user: { user_id: createExecutiveDto.user_id }, // ถ้าจำเป็นต้องเชื่อมโยงกับ User (ในกรณีนี้อาจเป็น ID)
+      createdAt: new Date(), // เพิ่ม createdAt (หรือสามารถใช้ default value ได้ถ้ามีใน entity)
+      updatedAt: new Date(), // เพิ่ม updatedAt (เช่นเดียวกัน)
+    });
 
-  //   // ตรวจสอบว่า User มีอยู่หรือไม่
-  //   const user = await this.userRepository.findOne({ where: { user_id } });
-  //   if (!user) {
-  //     throw new NotFoundException('User not found');
-  //   }
-
-  //   // ตรวจสอบว่า User เชื่อมโยงกับ Executive หรือไม่
-  //   const existingExecutive = await this.executiveRepository.findOne({
-  //     where: { user: { user_id } },
-  //   });
-
-  //   if (existingExecutive) {
-  //     throw new BadRequestException(
-  //       'This user is already linked to an Executive',
-  //     );
-  //   }
-
-  //   // ถ้าไม่มีการเชื่อมโยงใด ๆ ก็สร้าง Executive ใหม่
-  //   const executive = this.executiveRepository.create({
-  //     user,
-  //   });
-
-  //   // บันทึกข้อมูล executive ใน database
-  //   return await this.executiveRepository.save(executive);
-  // }
+    return this.executiveRepository.save(executive);
+  }
 
   // หา executive ทั้งหมด
   async findAll() {

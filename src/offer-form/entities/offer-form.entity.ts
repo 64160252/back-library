@@ -1,3 +1,7 @@
+import { Market } from 'src/all-role/market/entities/market.entity';
+import { Department } from 'src/department/entities/department.entity';
+import { Faculty } from 'src/faculty/entities/faculty.entity';
+import { Role } from 'src/role/entities/role.entity';
 import { User } from 'src/user/entities/user.entity';
 import {
   Column,
@@ -15,8 +19,35 @@ export class OfferForm {
   @PrimaryGeneratedColumn()
   offer_form_id: number;
 
+  @Column({ default: ' ' })
+  user_prefix: string;
+
   @Column()
-  market_name: string; // ชื่อร้านค้า
+  user_name: string;
+
+  @ManyToOne(() => Role, (role) => role.OfferForms, { eager: true }) // เพิ่ม eager loading
+  @JoinColumn({ name: 'role_id' })
+  role: Role;
+
+  @Column()
+  user_email: string;
+
+  @Column()
+  user_tel: string;
+
+  @ManyToOne(() => Faculty, (faculty) => faculty.OfferForms, { eager: true }) // เพิ่ม eager loading
+  @JoinColumn({ name: 'faculty_id' })
+  faculty: Faculty;
+
+  @ManyToOne(() => Department, (department) => department.OfferForms, {
+    eager: true,
+  }) // เพิ่ม eager loading
+  @JoinColumn({ name: 'department_id' })
+  department: Department;
+
+  @ManyToOne(() => Market, (market) => market.OfferForms, { eager: true }) // เพิ่ม eager loading
+  @JoinColumn({ name: 'market_id' })
+  market: Market; // ชื่อร้านค้า
 
   @Column()
   book_title: string; // ชื่อเรื่อง

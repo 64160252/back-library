@@ -1,63 +1,31 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Student } from './entities/student.entity';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { User } from 'src/user/entities/user.entity';
-import { Teacher } from '../teacher/entities/teacher.entity';
 
 @Injectable()
 export class StudentService {
   constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     @InjectRepository(Student)
     private readonly studentRepository: Repository<Student>,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>, // ใช้ Repository ของ User
-    @InjectRepository(Teacher)
-    private readonly teacherRepository: Repository<Teacher>,
   ) {}
 
-  // สร้าง student
-  // async create(createStudentDto: CreateStudentDto) {
-  //   // ค้นหาข้อมูล user ที่มี user_id ที่ตรงกับที่ได้รับมา
-  //   const { user_id } = createStudentDto;
+  async create(createStudentDto: CreateStudentDto): Promise<Student> {
+    // เพิ่ม user หรือ properties อื่น ๆ ที่จำเป็น
+    const student = this.studentRepository.create({
+      ...createStudentDto, // รวมข้อมูลจาก DTO ที่ได้รับ
+      user: { user_id: createStudentDto.user_id }, // ถ้าจำเป็นต้องเชื่อมโยงกับ User (ในกรณีนี้อาจเป็น ID)
+      createdAt: new Date(), // เพิ่ม createdAt (หรือสามารถใช้ default value ได้ถ้ามีใน entity)
+      updatedAt: new Date(), // เพิ่ม updatedAt (เช่นเดียวกัน)
+    });
 
-  //   // ตรวจสอบว่า User มีอยู่หรือไม่
-  //   const user = await this.userRepository.findOne({ where: { user_id } });
-  //   if (!user) {
-  //     throw new NotFoundException('User not found');
-  //   }
-
-  //   // ตรวจสอบว่า User เชื่อมโยงกับ Student หรือ Teacher แล้วหรือไม่
-  //   const existingStudent = await this.studentRepository.findOne({
-  //     where: { user: { user_id } },
-  //   });
-
-  //   const existingTeacher = await this.teacherRepository.findOne({
-  //     where: { user: { user_id } },
-  //   });
-
-  //   if (existingStudent) {
-  //     throw new BadRequestException('This user is already linked to a Student');
-  //   }
-
-  //   if (existingTeacher) {
-  //     throw new BadRequestException('This user is already linked to a Teacher');
-  //   }
-
-  //   // ถ้าไม่มีการเชื่อมโยงใด ๆ ก็สร้าง Teacher ใหม่
-  //   const student = this.studentRepository.create({
-  //     user,
-  //   });
-
-  //   // บันทึกข้อมูล student ใน database
-  //   return await this.studentRepository.save(student);
-  // }
+    return this.studentRepository.save(student);
+  }
 
   async findAll() {
     return await this.studentRepository
@@ -65,8 +33,6 @@ export class StudentService {
       .leftJoinAndSelect('student.user', 'user') // เชื่อมโยง student กับ user
       .select([
         'student.student_id',
-        'student.faculty',
-        'student.department',
         'user.user_id',
         'user.user_name',
         'user.user_email',
@@ -81,8 +47,6 @@ export class StudentService {
       .leftJoinAndSelect('student.user', 'user') // เชื่อมโยง student กับ user
       .select([
         'student.student_id',
-        'student.faculty',
-        'student.department',
         'user.user_id',
         'user.user_name',
         'user.user_email',

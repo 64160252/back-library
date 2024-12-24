@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { StaffLibraryNor } from './entities/staff-library-nor.entity'; // Entity ของ StaffLibraryNor
@@ -19,35 +15,19 @@ export class StaffLibraryNorService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  // สร้าง StaffLibraryNor
-  // async create(createStaffLibraryNorDto: CreateStaffLibraryNorDto) {
-  //   const { user_id } = createStaffLibraryNorDto;
+  async create(
+    createStaffLibraryNorDto: CreateStaffLibraryNorDto,
+  ): Promise<StaffLibraryNor> {
+    // เพิ่ม user หรือ properties อื่น ๆ ที่จำเป็น
+    const staffLibraryNor = this.staffLibraryNorRepository.create({
+      ...createStaffLibraryNorDto, // รวมข้อมูลจาก DTO ที่ได้รับ
+      user: { user_id: createStaffLibraryNorDto.user_id }, // ถ้าจำเป็นต้องเชื่อมโยงกับ User (ในกรณีนี้อาจเป็น ID)
+      createdAt: new Date(), // เพิ่ม createdAt (หรือสามารถใช้ default value ได้ถ้ามีใน entity)
+      updatedAt: new Date(), // เพิ่ม updatedAt (เช่นเดียวกัน)
+    });
 
-  //   // ตรวจสอบว่า User มีอยู่หรือไม่
-  //   const user = await this.userRepository.findOne({ where: { user_id } });
-  //   if (!user) {
-  //     throw new NotFoundException('User not found');
-  //   }
-
-  //   // ตรวจสอบว่า User เชื่อมโยงกับ StaffLibraryNor หรือไม่
-  //   const existingStaff = await this.staffLibraryNorRepository.findOne({
-  //     where: { user: { user_id } },
-  //   });
-
-  //   if (existingStaff) {
-  //     throw new BadRequestException(
-  //       'This user is already linked to a StaffLibraryNor',
-  //     );
-  //   }
-
-  //   // ถ้าไม่มีการเชื่อมโยงใด ๆ ก็สร้าง StaffLibraryNor ใหม่
-  //   const staffLibraryNor = this.staffLibraryNorRepository.create({
-  //     user,
-  //   });
-
-  //   // บันทึกข้อมูล StaffLibraryNor ในฐานข้อมูล
-  //   return await this.staffLibraryNorRepository.save(staffLibraryNor);
-  // }
+    return this.staffLibraryNorRepository.save(staffLibraryNor);
+  }
 
   // หา StaffLibraryNor ทั้งหมด
   async findAll() {
@@ -56,8 +36,6 @@ export class StaffLibraryNorService {
       .leftJoinAndSelect('staffLibraryNor.user', 'user')
       .select([
         'staffLibraryNor.staffs_library_nor_id',
-        'staffLibraryNor.faculty_id',
-        'staffLibraryNor.department_id',
         'user.user_id',
         'user.user_name',
         'user.user_email',
@@ -73,8 +51,6 @@ export class StaffLibraryNorService {
       .leftJoinAndSelect('staffLibraryNor.user', 'user')
       .select([
         'staffLibraryNor.staffs_library_nor_id',
-        'staffLibraryNor.faculty_id',
-        'staffLibraryNor.department_id',
         'user.user_id',
         'user.user_name',
         'user.user_email',

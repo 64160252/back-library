@@ -12,11 +12,18 @@ export class AuthService {
 
   // ตรวจสอบ username และ password
   async validateUser(username: string, password: string) {
-    const user = await this.userService.findByUsername(username);
-    if (user && (await bcrypt.compare(password, user.user_password))) {
-      return user;
+    const user = await this.userService.findOneByUsername(username);
+
+    if (!user) {
+      return null;
     }
-    return null;
+
+    const isPasswordValid = await bcrypt.compare(password, user.user_password);
+    if (!isPasswordValid) {
+      return null;
+    }
+
+    return user;
   }
 
   // Login และสร้าง Access Token กับ Refresh Token
@@ -26,29 +33,34 @@ export class AuthService {
       throw new UnauthorizedException('Invalid username or password');
     }
 
-    // ใช้ user_id ใน payload
+    // ใช้ user_id และ role ใน payload
     const payload = {
       username: user.user_name,
-      sub: user.user_id, // ใช้ sub แทน user_id เพื่อให้ JWT นั้นมีการตั้งค่าที่ถูกต้อง
-      role: user.role.role_name, // เพิ่ม role ของผู้ใช้
+      sub: user.user_id, // ใช้ sub สำหรับ user_id
+      role: user.role?.role_name, // เพิ่ม role
     };
 
     // สร้าง access token
     const access_token = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
-      expiresIn: process.env.JWT_EXPIRES_IN, // ระยะเวลาใช้งาน access token
+      expiresIn: process.env.JWT_EXPIRES_IN,
     });
 
     // สร้าง refresh token
     const refresh_token = this.jwtService.sign(payload, {
-      secret: process.env.JWT_REFRESH_SECRET, // ใช้ secret ที่แตกต่างจาก access token
-      expiresIn: process.env.JWT_REFRESH_EXPIRES_IN, // ระยะเวลาใช้งาน refresh token
+      secret: process.env.JWT_REFRESH_SECRET,
+      expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
     });
 
-    // บันทึก Refresh Token ลงในฐานข้อมูล
+    // บันทึก refresh token ในฐานข้อมูล
     await this.userService.updateRefreshToken(user.user_id, refresh_token);
 
-    return { access_token, refresh_token };
+    // ส่งค่ากลับที่มี access token, refresh token, และ role
+    return {
+      access_token,
+      refresh_token,
+      role: user.role.role_name,
+    };
   }
 
   // ฟังก์ชันสำหรับ refresh token และสร้าง access token ใหม่

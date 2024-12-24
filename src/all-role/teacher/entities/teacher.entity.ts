@@ -17,9 +17,9 @@ export class Teacher {
   @PrimaryGeneratedColumn()
   teacher_id: number;
 
-  // @OneToOne(() => User, (user) => user.teacher, { cascade: true }) // เชื่อมกับ User
-  // @JoinColumn({ name: 'user_id' })
-  // user: User;
+  @OneToOne(() => User, (user) => user.teacher, { cascade: true }) // เชื่อมกับ User
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 
   @CreateDateColumn()
   createdAt: Date;
