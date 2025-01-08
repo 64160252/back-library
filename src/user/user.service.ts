@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,16 +11,16 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role } from 'src/role/entities/role.entity';
+import axios from 'axios';
 import * as bcrypt from 'bcryptjs';
 import { Faculty } from 'src/faculty/entities/faculty.entity';
 import { Department } from 'src/department/entities/department.entity';
 import { Student } from 'src/all-role/student/entities/student.entity';
 import { Teacher } from 'src/all-role/teacher/entities/teacher.entity';
 import { Executive } from 'src/all-role/executive/entities/executive.entity';
-import { StaffLibraryAdm } from 'src/all-role/staff-library-adm/entities/staff-library-adm.entity';
-import { StaffLibraryNor } from 'src/all-role/staff-library-nor/entities/staff-library-nor.entity';
+import { StaffLibrary } from 'src/all-role/staff-library/entities/staff-library.entity';
 import { StaffFaculty } from 'src/all-role/staff-faculty/entities/staff-faculty.entity';
-import { Market } from 'src/all-role/market/entities/market.entity';
+import { Store } from 'src/all-role/store/entities/store.entity';
 
 @Injectable()
 export class UserService {
@@ -38,14 +39,12 @@ export class UserService {
     private readonly teacherRepository: Repository<Teacher>,
     @InjectRepository(Executive)
     private readonly executiveRepository: Repository<Executive>,
-    @InjectRepository(StaffLibraryAdm)
-    private readonly staffLibraryAdmRepository: Repository<StaffLibraryAdm>,
-    @InjectRepository(StaffLibraryNor)
-    private readonly staffLibraryNorRepository: Repository<StaffLibraryNor>,
+    @InjectRepository(StaffLibrary)
+    private readonly staffLibraryRepository: Repository<StaffLibrary>,
     @InjectRepository(StaffFaculty)
     private readonly staffFacultyRepository: Repository<StaffFaculty>,
-    @InjectRepository(Market)
-    private readonly marketRepository: Repository<Market>,
+    @InjectRepository(Store)
+    private readonly storeRepository: Repository<Store>,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -55,7 +54,12 @@ export class UserService {
       role,
       user_email,
       user_name,
+      user_prefix,
+      user_firstName,
+      user_lastName,
       user_tel,
+      position_name,
+      management_position_name,
       user_password,
       ...userData
     } = createUserDto;
@@ -158,7 +162,12 @@ export class UserService {
         ...userData,
         user_email,
         user_name,
+        user_prefix,
+        user_firstName,
+        user_lastName,
         user_tel,
+        position_name,
+        management_position_name,
         user_password: hashedPassword,
         faculty: facultyEntity,
         department: departmentEntity,
@@ -193,41 +202,31 @@ export class UserService {
 
         await this.executiveRepository.save(executive);
       } else if (
-        roleEntity.role_name === 'StaffLibraryNor' ||
+        roleEntity.role_name === 'StaffLibrary' ||
         roleEntity.role_id === 4
       ) {
-        const staffLibraryNor = this.staffLibraryNorRepository.create({
+        const staffLibrary = this.staffLibraryRepository.create({
           user: savedUser, // เชื่อมโยงกับ User ที่สร้างไว้
         });
 
-        await this.staffLibraryNorRepository.save(staffLibraryNor);
-      } else if (
-        roleEntity.role_name === 'StaffLibraryAdm' ||
-        roleEntity.role_id === 5
-      ) {
-        const staffLibraryAdm = this.staffLibraryAdmRepository.create({
-          user: savedUser, // เชื่อมโยงกับ User ที่สร้างไว้
-        });
-
-        await this.staffLibraryAdmRepository.save(staffLibraryAdm);
+        await this.staffLibraryRepository.save(staffLibrary);
       } else if (
         roleEntity.role_name === 'StaffFaculty' ||
-        roleEntity.role_id === 6
+        roleEntity.role_id === 5
       ) {
         const staffFaculty = this.staffFacultyRepository.create({
           user: savedUser, // เชื่อมโยงกับ User ที่สร้างไว้
         });
 
         await this.staffFacultyRepository.save(staffFaculty);
-      } else if (
-        roleEntity.role_name === 'Market' ||
-        roleEntity.role_id === 7
-      ) {
-        const market = this.marketRepository.create({
-          user: savedUser, // เชื่อมโยงกับ User ที่สร้างไว้
+      } else if (roleEntity.role_name === 'Store' || roleEntity.role_id === 6) {
+        const store = this.storeRepository.create({
+          user: savedUser, // เชื่อมโยง User
+          store_name: savedUser.user_name, // กำหนด store_name จาก user_name
         });
 
-        await this.marketRepository.save(market);
+        const savedStore = await this.storeRepository.save(store);
+        console.log('Store entity after save:', savedStore);
       }
 
       return savedUser;
@@ -243,6 +242,76 @@ export class UserService {
     }
   }
 
+  // async fetchUserData() {
+  //   try {
+  //     // ส่งคำขอไปยัง API ภายนอกพร้อมกับ Header
+  //     const response = await axios.get(
+  //       'https://info.lib.buu.ac.th/apilib/Persons/ShowPersons',
+  //     );
+
+  //     console.log('Data fetched:', response.data); // แสดงข้อมูลที่ได้รับ
+  //     return response.data; // คืนค่าข้อมูลที่ได้รับ
+  //   } catch (error) {
+  //     if (error.response) {
+  //       // หากมีข้อผิดพลาดจาก API
+  //       console.error(
+  //         'Error response:',
+  //         error.response.status,
+  //         error.response.data,
+  //       );
+  //       throw new Error('Failed to fetch data from API');
+  //     } else if (error.request) {
+  //       // หากไม่มีการตอบกลับจาก API
+  //       console.error('No response received:', error.request);
+  //       throw new Error('No response received from API');
+  //     } else {
+  //       // หากเกิดข้อผิดพลาดที่อื่น
+  //       console.error('Request error:', error.message);
+  //       throw new Error('Error in making request');
+  //     }
+  //   }
+  // }
+
+  // // ฟังก์ชันแมปข้อมูลจาก API เป็น CreateUserDto
+  // mapApiResponseToUserDto(apiData): CreateUserDto[] {
+  //   return apiData.map((user) => {
+  //     const userDto = new CreateUserDto();
+  //     userDto.user_prefix = user.Prefix_Name;
+  //     userDto.user_firstName = user.Firstname;
+  //     userDto.user_lastName = user.Lastname;
+  //     userDto.user_name = user.Username;
+  //     userDto.user_password = 'password';
+  //     userDto.user_email = user.Email;
+  //     userDto.user_tel = user.Phone;
+  //     userDto.faculty = user.Department_Name; // แปลงข้อมูล Faculty
+  //     userDto.department = user.Department_Name; // ถ้าใช้ Department Name เป็นค่าเดียวกันกับ Faculty
+  //     userDto.position_name = user.Position_Name;
+  //     userDto.management_position_name =
+  //       user.ManagementPositionName.length > 0
+  //         ? user.ManagementPositionName[0].ManagementPositionName
+  //         : null;
+  //     userDto.role = 'StaffLibrary'; // กำหนด role ตามต้องการ (หรือดึงจากข้อมูลอื่นที่คุณมี)
+
+  //     return userDto;
+  //   });
+  // }
+
+  // // ฟังก์ชันในการบันทึกข้อมูลผู้ใช้จาก API
+  // async saveUsersFromApi() {
+  //   const apiData = await this.fetchUserData(); // ดึงข้อมูลจาก API
+  //   const usersToSave: CreateUserDto[] = this.mapApiResponseToUserDto(apiData); // แปลงข้อมูลเป็น DTO
+
+  //   try {
+  //     // บันทึกข้อมูลผู้ใช้ทีละคน
+  //     for (const userDto of usersToSave) {
+  //       await this.create(userDto); // บันทึกข้อมูลในฐานข้อมูล
+  //     }
+  //     console.log('Users saved successfully');
+  //   } catch (error) {
+  //     console.error('Error saving users:', error);
+  //   }
+  // }
+
   async findAll(): Promise<User[]> {
     return await this.userRepository
       .createQueryBuilder('user')
@@ -252,6 +321,9 @@ export class UserService {
       .select([
         'user.user_id',
         'user.user_name',
+        'user.user_prefix',
+        'user.user_firstName',
+        'user.user_lastName',
         'user.user_email',
         'user.user_tel',
         'faculty.faculty_name',
@@ -270,6 +342,9 @@ export class UserService {
       .select([
         'user.user_id',
         'user.user_name',
+        'user.user_prefix',
+        'user.user_firstName',
+        'user.user_lastName',
         'user.user_email',
         'user.user_tel',
         'faculty.faculty_name',
@@ -325,9 +400,9 @@ export class UserService {
       updateUserDto;
 
     // ค้นหา User ที่ต้องการอัปเดต
-    const user = await this.findOne(userId);
+    const user = await this.userRepository.findOneBy({ user_id: userId });
     if (!user) {
-      throw new Error(`User with ID ${userId} not found`);
+      throw new NotFoundException(`User with ID ${userId} not found`);
     }
 
     // ตรวจสอบและอัปเดต Role
@@ -339,8 +414,8 @@ export class UserService {
         'role_name',
       );
       if (!roleEntity) {
-        throw new Error(
-          `Role not found with ${typeof role === 'number' ? 'ID' : 'name'}: ${role}`,
+        throw new BadRequestException(
+          `Role not found with ID or name: ${role}`,
         );
       }
       user.role = roleEntity;
@@ -355,8 +430,8 @@ export class UserService {
         'faculty_name',
       );
       if (!facultyEntity) {
-        throw new Error(
-          `Faculty not found with ${typeof faculty === 'number' ? 'ID' : 'name'}: ${faculty}`,
+        throw new BadRequestException(
+          `Faculty not found with ID or name: ${faculty}`,
         );
       }
       user.faculty = facultyEntity;
@@ -371,8 +446,8 @@ export class UserService {
         'department_name',
       );
       if (!departmentEntity) {
-        throw new Error(
-          `Department not found with ${typeof department === 'number' ? 'ID' : 'name'}: ${department}`,
+        throw new BadRequestException(
+          `Department not found with ID or name: ${department}`,
         );
       }
       user.department = departmentEntity;
@@ -387,7 +462,14 @@ export class UserService {
     Object.assign(user, userData);
 
     // บันทึกข้อมูล
-    return this.userRepository.save(user);
+    try {
+      return await this.userRepository.save(user);
+    } catch (error) {
+      console.error(`Error saving user: ${error.message}`);
+      throw new InternalServerErrorException(
+        `Failed to save user: ${error.message}`,
+      );
+    }
   }
 
   private async getEntityByIdOrName<T>(

@@ -12,10 +12,10 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity('staffsLibraryNor')
-export class StaffLibraryNor {
+@Entity('staffsLibrary')
+export class StaffLibrary {
   @PrimaryGeneratedColumn()
-  staffs_library_nor_id: number;
+  staffs_library_id: number;
 
   @OneToOne(() => User, (user) => user.student, { cascade: true }) // เชื่อมกับ User
   @JoinColumn({ name: 'user_id' })

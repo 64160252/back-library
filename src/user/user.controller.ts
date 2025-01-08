@@ -20,6 +20,19 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
+  // @Post('import')
+  // async importUsers() {
+  //   try {
+  //     const usersData = await this.userService.fetchUserData(); // เรียกข้อมูลจาก API
+  //     console.log('Users data fetched:', usersData);
+  //     // ตอนนี้คุณสามารถทำการบันทึกข้อมูลผู้ใช้ในฐานข้อมูลหรือใช้งานตามที่ต้องการ
+  //     return { message: 'Users saved successfully' };
+  //   } catch (error) {
+  //     console.error('Error importing users:', error.message);
+  //     throw error;
+  //   }
+  // }
+
   @Get()
   findAll() {
     return this.userService.findAll();

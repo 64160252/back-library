@@ -18,15 +18,15 @@ import { Faculty } from './faculty/entities/faculty.entity';
 import { Department } from './department/entities/department.entity';
 import { StaffFacultyModule } from './all-role/staff-faculty/staff-faculty.module';
 import { StaffLibraryAdmModule } from './all-role/staff-library-adm/staff-library-adm.module';
-import { StaffLibraryNorModule } from './all-role/staff-library-nor/staff-library-nor.module';
+import { StaffLibraryModule } from './all-role/staff-library/staff-library.module';
 import { ExecutiveModule } from './all-role/executive/executive.module';
 import { ECouponModule } from './e-coupon/e-coupon.module';
-import { MarketModule } from './all-role/market/market.module';
-import { Market } from './all-role/market/entities/market.entity';
+import { StoreModule } from './all-role/store/store.module';
+import { Store } from './all-role/store/entities/store.entity';
 import { Executive } from './all-role/executive/entities/executive.entity';
 import { StaffFaculty } from './all-role/staff-faculty/entities/staff-faculty.entity';
 import { StaffLibraryAdm } from './all-role/staff-library-adm/entities/staff-library-adm.entity';
-import { StaffLibraryNor } from './all-role/staff-library-nor/entities/staff-library-nor.entity';
+import { StaffLibrary } from './all-role/staff-library/entities/staff-library.entity';
 import { OfferForm } from './offer-form/entities/offer-form.entity';
 import { OfferFormModule } from './offer-form/offer-form.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -55,11 +55,11 @@ import { join } from 'path';
         Teacher,
         Faculty,
         Department,
-        Market,
+        Store,
         Executive,
         StaffFaculty,
         StaffLibraryAdm,
-        StaffLibraryNor,
+        StaffLibrary,
         OfferForm,
       ],
       synchronize: true,
@@ -73,10 +73,10 @@ import { join } from 'path';
     DepartmentModule,
     StaffFacultyModule,
     StaffLibraryAdmModule,
-    StaffLibraryNorModule,
+    StaffLibraryModule,
     ExecutiveModule,
     ECouponModule,
-    MarketModule,
+    StoreModule,
     OfferFormModule,
   ],
   controllers: [AppController],

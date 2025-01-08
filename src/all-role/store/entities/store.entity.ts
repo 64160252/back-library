@@ -12,19 +12,19 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity('markets')
-export class Market {
+@Entity('stores')
+export class Store {
   @PrimaryGeneratedColumn()
-  market_id: number;
+  store_id: number;
 
-  @Column()
-  market_name: string;
+  @Column({ nullable: false })
+  store_name: string;
 
   @OneToOne(() => User) // เชื่อมกับ User
   @JoinColumn({ name: 'user_id' }) // เชื่อม Foreign Key
   user: User;
 
-  @OneToMany(() => OfferForm, (OfferForm) => OfferForm.market)
+  @OneToMany(() => OfferForm, (OfferForm) => OfferForm.store)
   OfferForms: OfferForm[];
 
   @CreateDateColumn()

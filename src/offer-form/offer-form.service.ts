@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { CreateOfferFormDto } from './dto/create-offer-form.dto';
@@ -13,7 +14,7 @@ import { User } from 'src/user/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import * as path from 'path';
 import * as fs from 'fs';
-import { Market } from 'src/all-role/market/entities/market.entity';
+import { Store } from 'src/all-role/store/entities/store.entity';
 
 @Injectable()
 export class OfferFormService {
@@ -23,8 +24,8 @@ export class OfferFormService {
     private readonly jwtService: JwtService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(Market)
-    private readonly marketRepository: Repository<Market>,
+    @InjectRepository(Store)
+    private readonly storeRepository: Repository<Store>,
   ) {}
 
   // Create
@@ -62,6 +63,16 @@ export class OfferFormService {
 
     if (!user) {
       throw new UnauthorizedException(`User not found with ID: ${userId}`);
+    }
+
+    const store = await this.storeRepository.findOne({
+      where: { store_id: createOfferFormDto.store_id },
+    });
+
+    if (!store) {
+      throw new NotFoundException(
+        `Store with id ${createOfferFormDto.store_id} not found`,
+      );
     }
 
     const existingOfferForm = await this.offerFormRepository.findOne({
@@ -107,15 +118,15 @@ export class OfferFormService {
     const offerForm = this.offerFormRepository.create({
       ...createOfferFormDto,
       user_prefix: createOfferFormDto.user_prefix || user.user_prefix || '-',
+      user_fullname:
+        `${user.user_prefix || ''} ${user.user_firstName || ''} ${user.user_lastName || ''}`.trim(), // รวมค่า prefix, firstName, lastName
       user_name: user.user_name,
       role: user.role,
       user_email: user.user_email,
       user_tel: user.user_tel,
       faculty: user.faculty,
       department: user.department,
-      market: await this.marketRepository.findOne({
-        where: { market_id: createOfferFormDto.market_id },
-      }),
+      store,
       user,
       book_imgs: imagePaths, // เก็บพาธไฟล์ในฐานข้อมูล
     });
@@ -150,7 +161,7 @@ export class OfferFormService {
       .createQueryBuilder('offerForms')
       .select([
         'offerForms.offer_form_id',
-        'offerForms.market_name',
+        'offerForms.store_name',
         'offerForms.book_title',
         'offerForms.book_author',
         'offerForms.published_year',

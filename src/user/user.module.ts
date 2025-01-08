@@ -8,11 +8,11 @@ import { Faculty } from 'src/faculty/entities/faculty.entity';
 import { Department } from 'src/department/entities/department.entity';
 import { Student } from 'src/all-role/student/entities/student.entity';
 import { Teacher } from 'src/all-role/teacher/entities/teacher.entity';
-import { StaffLibraryNor } from 'src/all-role/staff-library-nor/entities/staff-library-nor.entity';
+import { StaffLibrary } from 'src/all-role/staff-library/entities/staff-library.entity';
 import { StaffLibraryAdm } from 'src/all-role/staff-library-adm/entities/staff-library-adm.entity';
 import { Executive } from 'src/all-role/executive/entities/executive.entity';
 import { StaffFaculty } from 'src/all-role/staff-faculty/entities/staff-faculty.entity';
-import { Market } from 'src/all-role/market/entities/market.entity';
+import { Store } from 'src/all-role/store/entities/store.entity';
 
 @Module({
   imports: [
@@ -24,10 +24,10 @@ import { Market } from 'src/all-role/market/entities/market.entity';
       Student,
       Teacher,
       Executive,
-      StaffLibraryNor,
+      StaffLibrary,
       StaffLibraryAdm,
       StaffFaculty,
-      Market,
+      Store,
     ]),
   ], // เชื่อมโยง Repository
   controllers: [UserController],

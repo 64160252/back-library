@@ -6,12 +6,12 @@ import { OfferForm } from './entities/offer-form.entity';
 import { User } from 'src/user/entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
-import { Market } from 'src/all-role/market/entities/market.entity';
+import { Store } from 'src/all-role/store/entities/store.entity';
 
 @Module({
   imports: [
     ConfigModule.forRoot(), // โหลดค่าจาก .env
-    TypeOrmModule.forFeature([OfferForm, User, Market]),
+    TypeOrmModule.forFeature([OfferForm, User, Store]),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: process.env.JWT_EXPIRES_IN },

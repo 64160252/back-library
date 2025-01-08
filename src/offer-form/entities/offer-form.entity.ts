@@ -1,4 +1,4 @@
-import { Market } from 'src/all-role/market/entities/market.entity';
+import { Store } from 'src/all-role/store/entities/store.entity';
 import { Department } from 'src/department/entities/department.entity';
 import { Faculty } from 'src/faculty/entities/faculty.entity';
 import { Role } from 'src/role/entities/role.entity';
@@ -23,6 +23,9 @@ export class OfferForm {
   user_prefix: string;
 
   @Column()
+  user_fullname: string;
+
+  @Column()
   user_name: string;
 
   @ManyToOne(() => Role, (role) => role.OfferForms, { eager: true }) // เพิ่ม eager loading
@@ -45,9 +48,9 @@ export class OfferForm {
   @JoinColumn({ name: 'department_id' })
   department: Department;
 
-  @ManyToOne(() => Market, (market) => market.OfferForms, { eager: true }) // เพิ่ม eager loading
-  @JoinColumn({ name: 'market_id' })
-  market: Market; // ชื่อร้านค้า
+  @ManyToOne(() => Store, (store) => store.OfferForms, { eager: true }) // เพิ่ม eager loading
+  @JoinColumn({ name: 'store_id' })
+  store: Store; // ชื่อร้านค้า
 
   @Column()
   book_title: string; // ชื่อเรื่อง

@@ -15,6 +15,10 @@ export class CreateOfferFormDto {
 
   @IsString()
   @IsNotEmpty()
+  user_fullname: string;
+
+  @IsString()
+  @IsNotEmpty()
   user_name: string;
 
   @IsNumber()
@@ -39,7 +43,7 @@ export class CreateOfferFormDto {
 
   @IsNumber()
   @IsNotEmpty()
-  market_id: number; // ชื่อร้านค้า
+  store_id: number; // ชื่อร้านค้า
 
   @IsNotEmpty()
   @IsString()
