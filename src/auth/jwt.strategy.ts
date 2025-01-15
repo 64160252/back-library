@@ -19,8 +19,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       prefix: payload.user_prefix,
       firstName: payload.user_firstName,
       lastName: payload.user_lastName,
-      role: payload.role,
+      offer_position: payload.offer_position,
       position_name: payload.position_name,
+      management_position_name: payload.management_position_name,
+      store_name: payload.store_name,
+      role: payload.role,
+      faculty: payload.faculty,
+      department: payload.department,
+      tel: payload.user_tel,
+      email: payload.user_email,
     };
   }
 }

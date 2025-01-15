@@ -9,36 +9,32 @@ import {
 } from 'class-validator';
 
 export class CreateOfferFormDto {
+  @IsString()
   @IsOptional()
-  @IsString()
-  user_prefix: string;
-
-  @IsString()
-  @IsNotEmpty()
   user_fullname: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   user_name: string;
 
   @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
   role_id: number;
 
   @IsEmail()
-  @IsNotEmpty()
+  @IsOptional()
   user_email: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   user_tel: string;
 
   @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
   faculty_id: number;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   department_id: number;
 
   @IsNumber()
@@ -76,7 +72,7 @@ export class CreateOfferFormDto {
   @IsPositive()
   book_quantity: number; // จำนวนเล่ม
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   coupon_used: string;
 

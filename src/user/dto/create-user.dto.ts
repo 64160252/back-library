@@ -2,23 +2,35 @@ import { IsString, IsEmail, IsNotEmpty, IsOptional } from 'class-validator'; // 
 
 export class CreateUserDto {
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   user_prefix: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   user_firstName: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   user_lastName: string;
+
+  @IsOptional()
+  offer_position: string;
+
+  @IsOptional()
+  position_name: string;
+
+  @IsOptional()
+  management_position_name: string;
+
+  @IsOptional()
+  store_name: string;
 
   @IsString()
   @IsNotEmpty()
   user_name: string;
 
   @IsEmail()
-  @IsNotEmpty()
+  @IsOptional()
   user_email: string;
 
   @IsString()
@@ -26,7 +38,7 @@ export class CreateUserDto {
   user_password: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   user_tel: string;
 
   @IsOptional()
@@ -34,12 +46,6 @@ export class CreateUserDto {
 
   @IsOptional()
   department: string | number;
-
-  @IsOptional()
-  position_name: string;
-
-  @IsOptional()
-  management_position_name: string;
 
   @IsNotEmpty()
   role: string | number;

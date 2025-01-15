@@ -1,7 +1,6 @@
 import { Executive } from 'src/all-role/executive/entities/executive.entity';
 import { Store } from 'src/all-role/store/entities/store.entity';
 import { StaffFaculty } from 'src/all-role/staff-faculty/entities/staff-faculty.entity';
-import { StaffLibraryAdm } from 'src/all-role/staff-library-adm/entities/staff-library-adm.entity';
 import { StaffLibrary } from 'src/all-role/staff-library/entities/staff-library.entity';
 import { Student } from 'src/all-role/student/entities/student.entity';
 import { Teacher } from 'src/all-role/teacher/entities/teacher.entity';
@@ -27,32 +26,42 @@ export class User {
   @PrimaryGeneratedColumn()
   user_id: number;
 
-  @Column({ default: ' ' })
+  @Column({ default: null, nullable: true })
   user_prefix: string;
 
-  @Column()
+  @Column({ default: null, nullable: true })
   user_firstName: string;
 
-  @Column()
+  @Column({ default: null, nullable: true })
   user_lastName: string;
+
+  @Column({ default: null, nullable: true })
+  offer_position: string;
+
+  @Column({ default: null, nullable: true })
+  position_name: string;
+
+  @Column({ default: null, nullable: true })
+  management_position_name: string;
+
+  @Column({ default: null, nullable: true })
+  store_name: string;
 
   @Column({ unique: true })
   user_name: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, default: null, nullable: true })
   user_email: string;
 
   @Column()
   user_password: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, default: null, nullable: true })
   user_tel: string;
 
-  @Column()
-  position_name: string;
-
-  @Column()
-  management_position_name: string;
+  @ManyToOne(() => Role, (role) => role.users)
+  @JoinColumn({ name: 'role_id' }) // ชื่อคอลัมน์ในฐานข้อมูล
+  role: Role;
 
   @ManyToOne(() => Faculty, (faculty) => faculty.users)
   @JoinColumn({ name: 'faculty_id' }) // ชื่อคอลัมน์ในฐานข้อมูล
@@ -64,10 +73,6 @@ export class User {
 
   @OneToMany(() => OfferForm, (OfferForm) => OfferForm.user)
   OfferForms: OfferForm[];
-
-  @ManyToOne(() => Role, (role) => role.users)
-  @JoinColumn({ name: 'role_id' }) // ชื่อคอลัมน์ในฐานข้อมูล
-  role: Role;
 
   @OneToOne(() => Student, (student) => student.user)
   student: Student;
@@ -81,16 +86,13 @@ export class User {
   @OneToOne(() => StaffFaculty, (staffFaculty) => staffFaculty.user)
   staffFaculty: StaffFaculty;
 
-  @OneToOne(() => StaffLibraryAdm, (staffLibraryAdm) => staffLibraryAdm.user)
-  staffLibraryAdm: StaffLibraryAdm;
-
   @OneToOne(() => StaffLibrary, (staffLibrary) => staffLibrary.user)
   staffLibrary: StaffLibrary;
 
   @OneToOne(() => Store, (store) => store.user)
   store: Store;
 
-  @Column({ nullable: true, length: 512 })
+  @Column({ nullable: true, length: 1024 })
   refresh_token: string; // เก็บ Refresh Token
 
   @CreateDateColumn()

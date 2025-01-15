@@ -4,16 +4,15 @@ import { Repository } from 'typeorm';
 import { Faculty } from './entities/faculty.entity';
 import { CreateFacultyDto } from './dto/create-faculty.dto';
 import { UpdateFacultyDto } from './dto/update-faculty.dto';
-import { Student } from 'src/all-role/student/entities/student.entity';
+import { Department } from 'src/department/entities/department.entity';
 
 @Injectable()
 export class FacultyService {
   constructor(
     @InjectRepository(Faculty)
-    private readonly facultyRepository: Repository<Faculty>, // Repository ของ Faculty
-
-    @InjectRepository(Student)
-    private readonly studentRepository: Repository<Student>,
+    private readonly facultyRepository: Repository<Faculty>,
+    @InjectRepository(Department)
+    private readonly departmentRepository: Repository<Department>,
   ) {}
 
   // สร้าง Faculty ใหม่
@@ -26,17 +25,21 @@ export class FacultyService {
     return this.facultyRepository
       .createQueryBuilder('faculty')
       .leftJoinAndSelect('faculty.departments', 'department') // ต้องตรงกับชื่อใน Entity
-      .leftJoinAndSelect('department.students', 'student') // ต้องตรงกับชื่อใน Entity
-      .leftJoinAndSelect('student.user', 'user') // เชื่อมโยง student กับ user
+      .leftJoinAndSelect('department.users', 'user') // เชื่อมโยง student กับ user
       .select([
         'faculty.faculty_id',
         'faculty.faculty_name',
-        'department.department_name',
-        'student.student_id', // เลือกฟิลด์ student_id
+        'department.department_id', // เลือกฟิลด์ department_id
+        'department.department_name', // เลือกฟิลด์ department_name
         'user.user_id', // เลือกฟิลด์ user_id
         'user.user_name', // เลือกฟิลด์ user_name
+        'user.user_prefix',
+        'user.user_firstName',
+        'user.user_lastName',
         'user.user_email', // เลือกฟิลด์ user_email
         'user.user_tel', // เลือกฟิลด์ user_tel
+        'user.position_name',
+        'user.management_position_name',
       ])
       .getMany();
   }
@@ -45,17 +48,21 @@ export class FacultyService {
     return this.facultyRepository
       .createQueryBuilder('faculty')
       .leftJoinAndSelect('faculty.departments', 'department')
-      .leftJoinAndSelect('department.students', 'student')
-      .leftJoinAndSelect('student.user', 'user') // เชื่อมโยง student กับ user
+      .leftJoinAndSelect('department.users', 'user') // เชื่อมโยง student กับ user
       .select([
         'faculty.faculty_id',
         'faculty.faculty_name',
-        'department.department_name',
-        'student.student_id', // เลือกฟิลด์ student_id
+        'department.department_id', // เลือกฟิลด์ department_id
+        'department.department_name', // เลือกฟิลด์ department_name
         'user.user_id', // เลือกฟิลด์ user_id
         'user.user_name', // เลือกฟิลด์ user_name
+        'user.user_prefix',
+        'user.user_firstName',
+        'user.user_lastName',
         'user.user_email', // เลือกฟิลด์ user_email
         'user.user_tel', // เลือกฟิลด์ user_tel
+        'user.position_name',
+        'user.management_position_name',
       ])
       .where('faculty.faculty_id = :id', { id })
       .getOne();
@@ -68,7 +75,7 @@ export class FacultyService {
   ): Promise<Faculty> {
     const faculty = await this.facultyRepository.findOne({
       where: { faculty_id: id },
-      relations: ['students'], // เพิ่มการเชื่อมโยงกับ students หากจำเป็น
+      relations: ['users'],
     });
 
     if (!faculty) {
@@ -84,7 +91,7 @@ export class FacultyService {
   async remove(id: number): Promise<void> {
     const faculty = await this.facultyRepository.findOne({
       where: { faculty_id: id },
-      relations: ['students'], // เพิ่มการเชื่อมโยงกับ students หากจำเป็น
+      relations: ['users'],
     });
 
     if (!faculty) {

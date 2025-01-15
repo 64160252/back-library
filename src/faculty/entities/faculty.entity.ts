@@ -36,5 +36,4 @@ export class Faculty {
 
   @DeleteDateColumn()
   deletedAt: Date;
-  students: any;
 }

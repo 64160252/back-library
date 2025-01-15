@@ -117,7 +117,6 @@ export class OfferFormService {
     // สร้าง offerForm และบันทึกข้อมูลลงในฐานข้อมูล
     const offerForm = this.offerFormRepository.create({
       ...createOfferFormDto,
-      user_prefix: createOfferFormDto.user_prefix || user.user_prefix || '-',
       user_fullname:
         `${user.user_prefix || ''} ${user.user_firstName || ''} ${user.user_lastName || ''}`.trim(), // รวมค่า prefix, firstName, lastName
       user_name: user.user_name,

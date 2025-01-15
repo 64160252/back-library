@@ -31,7 +31,7 @@ export class StoreService {
 
     const store = this.storeRepository.create({
       user, // เชื่อมโยงกับ User
-      store_name: user.user_name, // ใช้ user_name ของ User
+      store_name: user.store_name,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -48,6 +48,7 @@ export class StoreService {
       .leftJoinAndSelect('store.user', 'user') // เชื่อมโยง student กับ user
       .select([
         'store.store_id',
+        'store.store_name',
         'user.user_id',
         'user.user_name',
         'user.user_email',
@@ -62,6 +63,7 @@ export class StoreService {
       .leftJoinAndSelect('store.user', 'user') // เชื่อมโยง student กับ user
       .select([
         'store.store_id',
+        'store.store_name',
         'user.user_id',
         'user.user_name',
         'user.user_email',

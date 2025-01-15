@@ -9,7 +9,6 @@ import { Department } from 'src/department/entities/department.entity';
 import { Student } from 'src/all-role/student/entities/student.entity';
 import { Teacher } from 'src/all-role/teacher/entities/teacher.entity';
 import { StaffLibrary } from 'src/all-role/staff-library/entities/staff-library.entity';
-import { StaffLibraryAdm } from 'src/all-role/staff-library-adm/entities/staff-library-adm.entity';
 import { Executive } from 'src/all-role/executive/entities/executive.entity';
 import { StaffFaculty } from 'src/all-role/staff-faculty/entities/staff-faculty.entity';
 import { Store } from 'src/all-role/store/entities/store.entity';
@@ -25,7 +24,6 @@ import { Store } from 'src/all-role/store/entities/store.entity';
       Teacher,
       Executive,
       StaffLibrary,
-      StaffLibraryAdm,
       StaffFaculty,
       Store,
     ]),

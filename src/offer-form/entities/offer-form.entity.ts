@@ -19,26 +19,29 @@ export class OfferForm {
   @PrimaryGeneratedColumn()
   offer_form_id: number;
 
-  @Column({ default: ' ' })
-  user_prefix: string;
-
-  @Column()
+  @Column({ default: null, nullable: true })
   user_fullname: string;
 
-  @Column()
+  @Column({ default: null, nullable: true })
   user_name: string;
 
-  @ManyToOne(() => Role, (role) => role.OfferForms, { eager: true }) // เพิ่ม eager loading
+  @Column({ default: null, nullable: true })
+  user_email: string;
+
+  @Column({ default: null, nullable: true })
+  user_tel: string;
+
+  @ManyToOne(() => Role, (role) => role.OfferForms, {
+    eager: true,
+    nullable: true,
+  }) // เพิ่ม eager loading
   @JoinColumn({ name: 'role_id' })
   role: Role;
 
-  @Column()
-  user_email: string;
-
-  @Column()
-  user_tel: string;
-
-  @ManyToOne(() => Faculty, (faculty) => faculty.OfferForms, { eager: true }) // เพิ่ม eager loading
+  @ManyToOne(() => Faculty, (faculty) => faculty.OfferForms, {
+    eager: true,
+    nullable: true,
+  }) // เพิ่ม eager loading
   @JoinColumn({ name: 'faculty_id' })
   faculty: Faculty;
 
@@ -48,7 +51,10 @@ export class OfferForm {
   @JoinColumn({ name: 'department_id' })
   department: Department;
 
-  @ManyToOne(() => Store, (store) => store.OfferForms, { eager: true }) // เพิ่ม eager loading
+  @ManyToOne(() => Store, (store) => store.OfferForms, {
+    eager: true,
+    nullable: true,
+  }) // เพิ่ม eager loading
   @JoinColumn({ name: 'store_id' })
   store: Store; // ชื่อร้านค้า
 

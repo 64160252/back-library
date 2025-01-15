@@ -1,20 +1,38 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Department } from './entities/department.entity';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
+import { Faculty } from 'src/faculty/entities/faculty.entity';
 
 @Injectable()
 export class DepartmentService {
   constructor(
     @InjectRepository(Department)
     private readonly departmentRepository: Repository<Department>,
+    @InjectRepository(Faculty)
+    private readonly facultyRepository: Repository<Faculty>,
   ) {}
 
   // สร้าง Department ใหม่
   async create(createDepartmentDto: CreateDepartmentDto) {
-    const department = this.departmentRepository.create(createDepartmentDto);
+    const { department_name, faculty } = createDepartmentDto;
+
+    // ตรวจสอบว่าคณะ (Faculty) มีอยู่ในฐานข้อมูลหรือไม่
+    const facultyEntity = await this.facultyRepository.findOne({
+      where: { faculty_id: faculty },
+    });
+    if (!facultyEntity) {
+      throw new NotFoundException(`Faculty with ID ${faculty} not found`);
+    }
+
+    // สร้าง Department และเชื่อมโยงกับ Faculty
+    const department = this.departmentRepository.create({
+      department_name,
+      faculty: facultyEntity,
+    });
+
     return this.departmentRepository.save(department);
   }
 
@@ -22,16 +40,19 @@ export class DepartmentService {
   async findAll() {
     return await this.departmentRepository
       .createQueryBuilder('department') // ใช้ 'department' เป็นชื่อหลัก
-      .leftJoinAndSelect('department.students', 'student') // เชื่อมโยง department กับ students
-      .leftJoinAndSelect('student.user', 'user') // เชื่อมโยง student กับ user
+      .leftJoinAndSelect('department.users', 'user') // เชื่อมโยง department กับ students
       .select([
         'department.department_id', // เลือกฟิลด์ department_id
         'department.department_name', // เลือกฟิลด์ department_name
-        'student.student_id', // เลือกฟิลด์ student_id
         'user.user_id', // เลือกฟิลด์ user_id
         'user.user_name', // เลือกฟิลด์ user_name
+        'user.user_prefix',
+        'user.user_firstName',
+        'user.user_lastName',
         'user.user_email', // เลือกฟิลด์ user_email
         'user.user_tel', // เลือกฟิลด์ user_tel
+        'user.position_name',
+        'user.management_position_name',
       ]) // เลือกเฉพาะฟิลด์ที่ต้องการ
       .getMany();
   }
@@ -40,16 +61,19 @@ export class DepartmentService {
   async findOne(id: number) {
     return await this.departmentRepository
       .createQueryBuilder('department') // ใช้ 'department' เป็นชื่อหลัก
-      .leftJoinAndSelect('department.students', 'student') // เชื่อมโยง department กับ students
-      .leftJoinAndSelect('student.user', 'user') // เชื่อมโยง student กับ user
+      .leftJoinAndSelect('department.users', 'user') // เชื่อมโยง student กับ user
       .select([
         'department.department_id', // เลือกฟิลด์ department_id
         'department.department_name', // เลือกฟิลด์ department_name
-        'student.student_id', // เลือกฟิลด์ student_id
         'user.user_id', // เลือกฟิลด์ user_id
         'user.user_name', // เลือกฟิลด์ user_name
+        'user.user_prefix',
+        'user.user_firstName',
+        'user.user_lastName',
         'user.user_email', // เลือกฟิลด์ user_email
         'user.user_tel', // เลือกฟิลด์ user_tel
+        'user.position_name',
+        'user.management_position_name',
       ]) // เลือกเฉพาะฟิลด์ที่ต้องการ
       .where('department.department_id = :id', { id }) // กำหนดเงื่อนไขค้นหาตาม department_id
       .getOne();

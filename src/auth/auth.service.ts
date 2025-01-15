@@ -30,14 +30,27 @@ export class AuthService {
       throw new UnauthorizedException('Invalid username or password');
     }
 
+    // แปลง user_id ให้เป็นตัวเลขก่อนใช้ใน payload.sub
+    const userId = Number(user.user_id);
+    if (isNaN(userId)) {
+      throw new UnauthorizedException('Invalid user ID'); // ถ้า user_id ไม่ใช่ตัวเลข จะเกิดข้อผิดพลาด
+    }
+
     const payload = {
+      sub: userId,
       username: user.user_name,
       prefix: user.user_prefix,
       firstName: user.user_firstName,
       lastName: user.user_lastName,
-      sub: user.user_id,
-      role: user.role?.role_name,
+      offer_position: user.offer_position,
       position_name: user.position_name,
+      management_position_name: user.management_position_name,
+      store_name: user.store_name,
+      role: user.role?.role_name,
+      faculty: user.faculty?.faculty_name,
+      department: user.department?.department_name,
+      tel: user.user_tel,
+      email: user.user_email,
     };
     console.log(payload);
 
@@ -60,6 +73,8 @@ export class AuthService {
       access_token,
       refresh_token,
       role: user.role.role_name,
+      faculty: user.faculty.faculty_name,
+      department: user.department.department_name,
     };
   }
 

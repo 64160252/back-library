@@ -54,26 +54,28 @@ export class UserService {
       role,
       user_email,
       user_name,
+      user_password,
+      user_tel,
       user_prefix,
       user_firstName,
       user_lastName,
-      user_tel,
+      offer_position,
       position_name,
       management_position_name,
-      user_password,
+      store_name,
       ...userData
     } = createUserDto;
 
     try {
       // ตรวจสอบข้อมูลซ้ำ: Email
-      const existingEmail = await this.userRepository.findOne({
-        where: { user_email },
-      });
-      if (existingEmail) {
-        throw new ConflictException(`Email '${user_email}' is already in use.`);
-      }
+      // const existingEmail = await this.userRepository.findOne({
+      //   where: { user_email },
+      // });
+      // if (existingEmail) {
+      //   throw new ConflictException(`Email '${user_email}' is already in use.`);
+      // }
 
-      // ตรวจสอบข้อมูลซ้ำ: Name
+      // ตรวจสอบข้อมูลซ้ำ: Username
       const existingName = await this.userRepository.findOne({
         where: { user_name },
       });
@@ -84,14 +86,14 @@ export class UserService {
       }
 
       // ตรวจสอบข้อมูลซ้ำ: Tel
-      const existingTel = await this.userRepository.findOne({
-        where: { user_tel },
-      });
-      if (existingTel) {
-        throw new ConflictException(
-          `Telephone number '${user_tel}' is already in use.`,
-        );
-      }
+      // const existingTel = await this.userRepository.findOne({
+      //   where: { user_tel },
+      // });
+      // if (existingTel) {
+      //   throw new ConflictException(
+      //     `Telephone number '${user_tel}' is already in use.`,
+      //   );
+      // }
 
       // ตรวจสอบ Faculty
       let facultyEntity = null;
@@ -162,12 +164,14 @@ export class UserService {
         ...userData,
         user_email,
         user_name,
+        user_tel,
         user_prefix,
         user_firstName,
         user_lastName,
-        user_tel,
+        offer_position,
         position_name,
         management_position_name,
+        store_name,
         user_password: hashedPassword,
         faculty: facultyEntity,
         department: departmentEntity,
@@ -360,6 +364,8 @@ export class UserService {
     const user = await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.role', 'role')
+      .leftJoinAndSelect('user.faculty', 'faculty')
+      .leftJoinAndSelect('user.department', 'department')
       .where('user.user_name = :username', { username })
       .getOne();
 
@@ -370,7 +376,7 @@ export class UserService {
   async findOneByUsername(username: string): Promise<User | undefined> {
     return this.userRepository.findOne({
       where: { user_name: username },
-      relations: ['role'],
+      relations: ['faculty', 'department', 'role'],
     });
   }
 
@@ -400,57 +406,117 @@ export class UserService {
       updateUserDto;
 
     // ค้นหา User ที่ต้องการอัปเดต
-    const user = await this.userRepository.findOneBy({ user_id: userId });
+    const user = await this.userRepository.findOne({
+      where: { user_id: userId },
+      relations: ['role'], // โหลดความสัมพันธ์ role มาด้วย
+    });
     if (!user) {
       throw new NotFoundException(`User with ID ${userId} not found`);
     }
 
+    // Helper function สำหรับตรวจสอบและอัปเดต entity
+    const updateEntity = async (
+      repository: any,
+      value: string | number | null,
+      idField: string,
+      nameField: string,
+    ): Promise<any> => {
+      if (!value) return null;
+      const entity = await this.getEntityByIdOrName(
+        repository,
+        value,
+        idField,
+        nameField,
+      );
+      if (!entity) {
+        throw new BadRequestException(
+          `${nameField.replace('_', ' ')} not found with ID or name: ${value}`,
+        );
+      }
+      return entity;
+    };
+
     // ตรวจสอบและอัปเดต Role
+    let newRoleEntity = null;
     if (role) {
-      const roleEntity = await this.getEntityByIdOrName(
+      newRoleEntity = await updateEntity(
         this.roleRepository,
         role,
         'role_id',
         'role_name',
       );
-      if (!roleEntity) {
-        throw new BadRequestException(
-          `Role not found with ID or name: ${role}`,
-        );
+      if (newRoleEntity.role_id !== user.role.role_id) {
+        // ตรวจสอบ role และอัปเดตข้อมูลที่เกี่ยวข้อง
+        if (
+          newRoleEntity.role_name === 'Student' ||
+          newRoleEntity.role_id === 1
+        ) {
+          // ลบข้อมูลเก่าที่เกี่ยวข้องกับ role ก่อนหน้า
+          await this.studentRepository.delete({ user });
+          // สร้างข้อมูลใหม่สำหรับ Student
+          const student = this.studentRepository.create({ user });
+          await this.studentRepository.save(student);
+        } else if (
+          newRoleEntity.role_name === 'Teacher' ||
+          newRoleEntity.role_id === 2
+        ) {
+          await this.teacherRepository.delete({ user });
+          const teacher = this.teacherRepository.create({ user });
+          await this.teacherRepository.save(teacher);
+        } else if (
+          newRoleEntity.role_name === 'Executive' ||
+          newRoleEntity.role_id === 3
+        ) {
+          await this.executiveRepository.delete({ user });
+          const executive = this.executiveRepository.create({ user });
+          await this.executiveRepository.save(executive);
+        } else if (
+          newRoleEntity.role_name === 'StaffLibrary' ||
+          newRoleEntity.role_id === 4
+        ) {
+          await this.staffLibraryRepository.delete({ user });
+          const staffLibrary = this.staffLibraryRepository.create({ user });
+          await this.staffLibraryRepository.save(staffLibrary);
+        } else if (
+          newRoleEntity.role_name === 'StaffFaculty' ||
+          newRoleEntity.role_id === 5
+        ) {
+          await this.staffFacultyRepository.delete({ user });
+          const staffFaculty = this.staffFacultyRepository.create({ user });
+          await this.staffFacultyRepository.save(staffFaculty);
+        } else if (
+          newRoleEntity.role_name === 'Store' ||
+          newRoleEntity.role_id === 6
+        ) {
+          await this.storeRepository.delete({ user });
+          const store = this.storeRepository.create({
+            user,
+            store_name: userData.user_name || user.user_name, // ใช้ user_name เป็น store_name
+          });
+          await this.storeRepository.save(store);
+        }
+        user.role = newRoleEntity; // อัปเดต role ใหม่
       }
-      user.role = roleEntity;
     }
 
     // ตรวจสอบและอัปเดต Faculty
     if (faculty) {
-      const facultyEntity = await this.getEntityByIdOrName(
+      user.faculty = await updateEntity(
         this.facultyRepository,
         faculty,
         'faculty_id',
         'faculty_name',
       );
-      if (!facultyEntity) {
-        throw new BadRequestException(
-          `Faculty not found with ID or name: ${faculty}`,
-        );
-      }
-      user.faculty = facultyEntity;
     }
 
     // ตรวจสอบและอัปเดต Department
     if (department) {
-      const departmentEntity = await this.getEntityByIdOrName(
+      user.department = await updateEntity(
         this.departmentRepository,
         department,
         'department_id',
         'department_name',
       );
-      if (!departmentEntity) {
-        throw new BadRequestException(
-          `Department not found with ID or name: ${department}`,
-        );
-      }
-      user.department = departmentEntity;
     }
 
     // หากมีการส่งรหัสผ่านใหม่มา ต้องแฮชรหัสผ่านก่อนอัปเดต

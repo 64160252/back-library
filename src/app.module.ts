@@ -17,7 +17,6 @@ import { DepartmentModule } from './department/department.module';
 import { Faculty } from './faculty/entities/faculty.entity';
 import { Department } from './department/entities/department.entity';
 import { StaffFacultyModule } from './all-role/staff-faculty/staff-faculty.module';
-import { StaffLibraryAdmModule } from './all-role/staff-library-adm/staff-library-adm.module';
 import { StaffLibraryModule } from './all-role/staff-library/staff-library.module';
 import { ExecutiveModule } from './all-role/executive/executive.module';
 import { ECouponModule } from './e-coupon/e-coupon.module';
@@ -25,7 +24,6 @@ import { StoreModule } from './all-role/store/store.module';
 import { Store } from './all-role/store/entities/store.entity';
 import { Executive } from './all-role/executive/entities/executive.entity';
 import { StaffFaculty } from './all-role/staff-faculty/entities/staff-faculty.entity';
-import { StaffLibraryAdm } from './all-role/staff-library-adm/entities/staff-library-adm.entity';
 import { StaffLibrary } from './all-role/staff-library/entities/staff-library.entity';
 import { OfferForm } from './offer-form/entities/offer-form.entity';
 import { OfferFormModule } from './offer-form/offer-form.module';
@@ -58,7 +56,6 @@ import { join } from 'path';
         Store,
         Executive,
         StaffFaculty,
-        StaffLibraryAdm,
         StaffLibrary,
         OfferForm,
       ],
@@ -72,7 +69,6 @@ import { join } from 'path';
     FacultyModule,
     DepartmentModule,
     StaffFacultyModule,
-    StaffLibraryAdmModule,
     StaffLibraryModule,
     ExecutiveModule,
     ECouponModule,
