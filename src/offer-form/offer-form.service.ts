@@ -150,28 +150,22 @@ export class OfferFormService {
   }
 
   // Find all
-  async findAll(): Promise<OfferForm[]> {
-    return await this.offerFormRepository.find();
+  // async findAll(): Promise<OfferForm[]> {
+  //   return await this.offerFormRepository.find();
+  // }
+
+  async findAllByUser(userId: number): Promise<OfferForm[]> {
+    console.log('Fetching data for UserId:', userId); // ตรวจสอบว่า userId ถูกส่งมา
+    return await this.offerFormRepository.find({
+      where: { user: { user_id: userId } }, // กรองข้อมูลโดยใช้ userId
+    });
   }
 
   // Find one
   async findOne(id: number): Promise<OfferForm> {
-    return await this.offerFormRepository
-      .createQueryBuilder('offerForms')
-      .select([
-        'offerForms.offer_form_id',
-        'offerForms.store_name',
-        'offerForms.book_title',
-        'offerForms.book_author',
-        'offerForms.published_year',
-        'offerForms.ISBN',
-        'offerForms.book_subject',
-        'offerForms.book_price',
-        'offerForms.book_quantity',
-        'offerForms.book_imgs',
-      ])
-      .where('offerForms.offer_form_id = :id', { id })
-      .getOne();
+    return await this.offerFormRepository.findOne({
+      where: { offer_form_id: id },
+    });
   }
 
   // Update

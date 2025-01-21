@@ -79,6 +79,10 @@ export class CreateOfferFormDto {
   @IsOptional()
   book_imgs: string[];
 
+  // @IsNotEmpty()
+  // @IsString()
+  // form_status: string;
+
   @IsNumber()
   @IsNotEmpty()
   user_id: number;

@@ -11,6 +11,8 @@ import {
   UnauthorizedException,
   UploadedFiles,
   UseInterceptors,
+  Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { OfferFormService } from './offer-form.service';
 import { CreateOfferFormDto } from './dto/create-offer-form.dto';
@@ -48,9 +50,20 @@ export class OfferFormController {
     return this.offerFormService.create(createOfferFormDto, req, files);
   }
 
+  // @Get()
+  // findAll() {
+  //   return this.offerFormService.findAll();
+  // }
+
   @Get()
-  findAll() {
-    return this.offerFormService.findAll();
+  @UseGuards(JwtAuthGuard)
+  async findAll(@Request() req: any) {
+    console.log('Request User:', req.user);
+    const userId = req.user?.userId;
+    if (!userId) {
+      throw new UnauthorizedException('User not authenticated');
+    }
+    return await this.offerFormService.findAllByUser(userId);
   }
 
   @Get(':id')

@@ -82,6 +82,9 @@ export class OfferForm {
   @Column()
   coupon_used: string;
 
+  @Column({ default: 'รอการอนุมัติ' })
+  form_status: string;
+
   @Column('simple-array', { nullable: true })
   book_imgs: string[];
 
