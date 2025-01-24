@@ -149,10 +149,9 @@ export class OfferFormService {
     }
   }
 
-  // Find all
-  // async findAll(): Promise<OfferForm[]> {
-  //   return await this.offerFormRepository.find();
-  // }
+  async findAll(): Promise<OfferForm[]> {
+    return await this.offerFormRepository.find();
+  }
 
   async findAllByUser(userId: number): Promise<OfferForm[]> {
     console.log('Fetching data for UserId:', userId); // ตรวจสอบว่า userId ถูกส่งมา

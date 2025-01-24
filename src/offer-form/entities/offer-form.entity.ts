@@ -85,6 +85,9 @@ export class OfferForm {
   @Column({ default: 'รอการอนุมัติ' })
   form_status: string;
 
+  @Column()
+  duplicate_check: string;
+
   @Column('simple-array', { nullable: true })
   book_imgs: string[];
 

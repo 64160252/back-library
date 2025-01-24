@@ -50,20 +50,20 @@ export class OfferFormController {
     return this.offerFormService.create(createOfferFormDto, req, files);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.offerFormService.findAll();
-  // }
-
-  @Get()
+  @Get('/user')
   @UseGuards(JwtAuthGuard)
-  async findAll(@Request() req: any) {
+  async findAllByUser(@Request() req: any) {
     console.log('Request User:', req.user);
     const userId = req.user?.userId;
     if (!userId) {
       throw new UnauthorizedException('User not authenticated');
     }
     return await this.offerFormService.findAllByUser(userId);
+  }
+
+  @Get()
+  findAll() {
+    return this.offerFormService.findAll();
   }
 
   @Get(':id')
