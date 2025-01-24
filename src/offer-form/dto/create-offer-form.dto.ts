@@ -79,9 +79,11 @@ export class CreateOfferFormDto {
   @IsOptional()
   book_imgs: string[];
 
+  @IsOptional()
   @IsString()
   duplicate_check: string;
 
+  @IsOptional()
   @IsString()
   form_status: string;
 

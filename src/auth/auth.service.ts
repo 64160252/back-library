@@ -47,8 +47,8 @@ export class AuthService {
       management_position_name: user.management_position_name,
       store_name: user.store_name,
       role: user.role?.role_name,
-      faculty: user.faculty?.faculty_name,
-      department: user.department?.department_name,
+      faculty: user.faculty ? user.faculty.faculty_name : null,
+      department: user.department ? user.department.department_name : null,
       tel: user.user_tel,
       email: user.user_email,
     };

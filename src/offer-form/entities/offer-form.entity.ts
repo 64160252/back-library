@@ -85,7 +85,7 @@ export class OfferForm {
   @Column({ default: 'รอการอนุมัติ' })
   form_status: string;
 
-  @Column()
+  @Column({ nullable: true })
   duplicate_check: string;
 
   @Column('simple-array', { nullable: true })
