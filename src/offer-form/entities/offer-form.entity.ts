@@ -80,13 +80,16 @@ export class OfferForm {
   book_quantity: number; // จำนวนเล่ม
 
   @Column()
+  book_category: string;
+
+  @Column()
   coupon_used: string;
 
-  @Column({ default: 'รอการอนุมัติ' })
+  @Column({ default: 'กำลังดำเนินการ' })
   form_status: string;
 
-  @Column({ nullable: true })
-  duplicate_check: string;
+  // @Column({ nullable: true })
+  // duplicate_check: string;
 
   @Column('simple-array', { nullable: true })
   book_imgs: string[];

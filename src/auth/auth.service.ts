@@ -29,13 +29,13 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Invalid username or password');
     }
-
+  
     // แปลง user_id ให้เป็นตัวเลขก่อนใช้ใน payload.sub
     const userId = Number(user.user_id);
     if (isNaN(userId)) {
-      throw new UnauthorizedException('Invalid user ID'); // ถ้า user_id ไม่ใช่ตัวเลข จะเกิดข้อผิดพลาด
+      throw new UnauthorizedException('Invalid user ID');
     }
-
+  
     const payload = {
       sub: userId,
       username: user.user_name,
@@ -47,36 +47,36 @@ export class AuthService {
       management_position_name: user.management_position_name,
       store_name: user.store_name,
       role: user.role?.role_name,
-      faculty: user.faculty ? user.faculty.faculty_name : null,
-      department: user.department ? user.department.department_name : null,
+      faculty: user.faculty?.faculty_name || null, // เพิ่ม fallback เป็น null
+      department: user.department?.department_name || null, // เพิ่ม fallback เป็น null
       tel: user.user_tel,
       email: user.user_email,
     };
     console.log(payload);
-
+  
     // สร้าง access token
     const access_token = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
-
+  
     // สร้าง refresh token
     const refresh_token = this.jwtService.sign(payload, {
       secret: process.env.JWT_REFRESH_SECRET,
       expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
     });
-
+  
     // อัพเดท refresh token ในฐานข้อมูล
     await this.userService.updateRefreshToken(user.user_id, refresh_token);
-
+  
     return {
       access_token,
       refresh_token,
-      role: user.role.role_name,
-      faculty: user.faculty.faculty_name,
-      department: user.department.department_name,
+      role: user.role?.role_name || null,
+      faculty: user.faculty?.faculty_name || null,
+      department: user.department?.department_name || null,
     };
-  }
+  }  
 
   async refreshToken(refreshToken: string) {
     let payload: any;

@@ -81,7 +81,11 @@ export class CreateOfferFormDto {
 
   @IsOptional()
   @IsString()
-  duplicate_check: string;
+  book_category: string;
+
+  // @IsOptional()
+  // @IsString()
+  // duplicate_check: string;
 
   @IsOptional()
   @IsString()

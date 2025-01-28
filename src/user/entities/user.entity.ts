@@ -63,11 +63,13 @@ export class User {
   @JoinColumn({ name: 'role_id' }) // ชื่อคอลัมน์ในฐานข้อมูล
   role: Role;
 
-  @ManyToOne(() => Faculty, (faculty) => faculty.users)
+  @ManyToOne(() => Faculty, (faculty) => faculty.users, { nullable: true })
   @JoinColumn({ name: 'faculty_id' }) // ชื่อคอลัมน์ในฐานข้อมูล
   faculty: Faculty; // ชื่อคณะ (เก็บเป็นข้อความ)
 
-  @ManyToOne(() => Department, (department) => department.users)
+  @ManyToOne(() => Department, (department) => department.users, {
+    nullable: true,
+  })
   @JoinColumn({ name: 'department_id' }) // ชื่อคอลัมน์ในฐานข้อมูล
   department: Department; // ชื่อสาขา (เก็บเป็นข้อความ)
 
