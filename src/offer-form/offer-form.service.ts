@@ -75,15 +75,15 @@ export class OfferFormService {
       );
     }
 
-    const existingOfferForm = await this.offerFormRepository.findOne({
-      where: { ISBN: createOfferFormDto.ISBN },
-    });
+    // const existingOfferForm = await this.offerFormRepository.findOne({
+    //   where: { ISBN: createOfferFormDto.ISBN },
+    // });
 
-    if (existingOfferForm) {
-      throw new ConflictException(
-        `Offer with ISBN ${createOfferFormDto.ISBN} already exists`,
-      );
-    }
+    // if (existingOfferForm) {
+    //   throw new ConflictException(
+    //     `Offer with ISBN ${createOfferFormDto.ISBN} already exists`,
+    //   );
+    // }
 
     // สร้างโฟลเดอร์สำหรับเก็บไฟล์ภาพ
     const uploadDir = path.join(__dirname, '..', 'src', 'images'); // เปลี่ยนเป็น src/images

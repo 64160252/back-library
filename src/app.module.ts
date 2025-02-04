@@ -29,6 +29,8 @@ import { OfferForm } from './offer-form/entities/offer-form.entity';
 import { OfferFormModule } from './offer-form/offer-form.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { BudgetModule } from './budget/budget.module';
+import { Budget } from './budget/entities/budget.entity';
 
 @Module({
   imports: [
@@ -58,6 +60,7 @@ import { join } from 'path';
         StaffFaculty,
         StaffLibrary,
         OfferForm,
+        Budget,
       ],
       synchronize: true,
     }),
@@ -74,6 +77,7 @@ import { join } from 'path';
     ECouponModule,
     StoreModule,
     OfferFormModule,
+    BudgetModule,
   ],
   controllers: [AppController],
   providers: [AppService],

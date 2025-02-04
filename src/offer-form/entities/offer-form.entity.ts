@@ -67,7 +67,7 @@ export class OfferForm {
   @Column()
   published_year: number; // ปีพิมพ์
 
-  @Column({ unique: true })
+  @Column()
   ISBN: string; // ISBN
 
   @Column()
@@ -79,7 +79,7 @@ export class OfferForm {
   @Column()
   book_quantity: number; // จำนวนเล่ม
 
-  @Column()
+  @Column({ nullable: true })
   book_category: string;
 
   @Column()
