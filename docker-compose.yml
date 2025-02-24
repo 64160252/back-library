@@ -1,43 +1,94 @@
+version: "3.0"
 services:
+  # MySQL Database
   db:
     image: mysql:8.0
     container_name: db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: "1234"
-      MYSQL_DATABASE: testdb
+      MYSQL_ROOT_PASSWORD: "Bookfair@2025#"
+      MYSQL_DATABASE: bookfair_db
+      MYSQL_USER: bookfair
+      MYSQL_PASSWORD: "Bookfair@2025#"
     ports:
-      - "3306:3306"
+      - "8042:3306"  # เปลี่ยนเป็น Port 8042 เพื่อให้ใช้งานได้ในช่วงที่กำหนด
     volumes:
       - db_data:/var/lib/mysql
 
+  # PhpMyAdmin for database management
   phpmyadmin:
-    image: phpmyadmin
+    image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin_db
     restart: always
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
     ports:
-      - "8090:80"
+      - "8043:80"  # เปลี่ยนเป็น Port 8043 เพื่อเข้าผ่านเว็บ
 
+  # NestJS Backend
   nestjs:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile  # ใช้ Dockerfile สำหรับสร้าง image ของ NestJS
     container_name: nestjs_app
     restart: always
     ports:
-      - "3000:3000"
+      - "8041:3000"  # เปลี่ยนเป็น Port 8041 สำหรับหน้าแรกของเว็บ
     depends_on:
-      - db
+      - db  # รอให้ MySQL พร้อมก่อน
     environment:
       DB_HOST: db
       DB_PORT: 3306
-      DB_USERNAME: root
-      DB_PASSWORD: rootpassword
-      DB_DATABASE: testdb
-    command: ["npm", "run", "start:dev"]
+      DB_USERNAME: bookfair
+      DB_PASSWORD: "Bookfair@2025#"
+      DB_DATABASE: bookfair_db
+    command: ["npm", "run", "start:dev"]  # ใช้คำสั่งที่เหมาะสมกับ NestJS ของคุณ
 
 volumes:
   db_data:
+
+
+# services:
+#   db:
+#     image: mysql:8.0
+#     container_name: db
+#     restart: always
+#     environment:
+#       MYSQL_ROOT_PASSWORD: "1234"
+#       MYSQL_DATABASE: library
+#     ports:
+#       - "3306:3306"
+#     volumes:
+#       - db_data:/var/lib/mysql
+
+#   phpmyadmin:
+#     image: phpmyadmin
+#     container_name: phpmyadmin_db
+#     restart: always
+#     environment:
+#       PMA_HOST: db
+#       PMA_PORT: 3306
+#     ports:
+#       - "8090:80"
+
+#   nestjs:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     container_name: nestjs_app
+#     restart: always
+#     ports:
+#       - "3000:3000"
+#     depends_on:
+#       - db
+#     environment:
+#       DB_HOST: db
+#       DB_PORT: 3306
+#       DB_USERNAME: root
+#       DB_PASSWORD: rootpassword
+#       DB_DATABASE: testdb
+#     command: ["npm", "run", "start:dev"]
+
+# volumes:
+#   db_data:

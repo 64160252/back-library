@@ -4,17 +4,17 @@ import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
-import { UserModule } from 'src/user/user.module';
-import { ConfigModule } from '@nestjs/config';  // นำเข้า ConfigModule
+import { ConfigModule } from '@nestjs/config';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),  // ใช้เพื่อโหลดไฟล์ .env
-    UserModule,
+    ConfigModule.forRoot(),
+    UsersModule,
     PassportModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET,  // ดึงค่า JWT_SECRET จากไฟล์ .env
-      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN },  // ดึงค่า JWT_EXPIRES_IN จากไฟล์ .env
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN }, 
     }),
   ],
   controllers: [AuthController],
