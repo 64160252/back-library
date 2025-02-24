@@ -124,10 +124,7 @@ export class UsersService {
   }
 
   // ฟังก์ชันสร้าง refresh token สำหรับ login
-  async createRefreshToken(
-    id: number,
-    refreshToken: string,
-  ): Promise<void> {
+  async createRefreshToken(id: number, refreshToken: string): Promise<void> {
     await this.userRepository.update(id, { refresh_token: refreshToken });
   }
 
