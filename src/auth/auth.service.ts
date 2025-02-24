@@ -65,6 +65,7 @@ export class AuthService {
               user_prefix: user.teacher?.user_prefix,
               user_firstName: user.teacher?.user_firstName,
               user_lastName: user.teacher?.user_lastName,
+              duty_name: user.teacher?.duty_name,
             }
           : null,
       student:
@@ -73,6 +74,7 @@ export class AuthService {
               user_prefix: user.student?.user_prefix,
               user_firstName: user.student?.user_firstName,
               user_lastName: user.student?.user_lastName,
+              duty_name: user.student?.duty_name,
             }
           : null,
     };
