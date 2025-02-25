@@ -48,8 +48,6 @@ export class AuthService {
       throw new UnauthorizedException('Invalid username or password');
     }
 
-    console.log('User executive data:', user.executive);
-
     const userId = Number(user.user_id);
     if (isNaN(userId)) {
       throw new UnauthorizedException('Invalid user ID');
