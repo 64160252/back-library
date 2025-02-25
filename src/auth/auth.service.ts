@@ -59,6 +59,51 @@ export class AuthService {
       username: user.user_name,
       tel: user.user_tel,
       role: user.role?.role_name,
+      executive:
+        user.role?.role_name === 'Executive'
+          ? {
+              user_prefix: user.executive?.user_prefix,
+              user_firstName: user.executive?.user_firstName,
+              user_lastName: user.executive?.user_lastName,
+              duty_name: user.executive?.duty_name,
+            }
+          : null,
+      admin:
+        user.role?.role_name === 'Admin'
+          ? {
+              user_prefix: user.admin?.user_prefix,
+              user_firstName: user.admin?.user_firstName,
+              user_lastName: user.admin?.user_lastName,
+              duty_name: user.admin?.duty_name,
+            }
+          : null,
+      staffLibrary:
+        user.role?.role_name === 'StaffLibrary'
+          ? {
+              user_prefix: user.staffLibrary?.user_prefix,
+              user_firstName: user.staffLibrary?.user_firstName,
+              user_lastName: user.staffLibrary?.user_lastName,
+              duty_name: user.staffLibrary?.duty_name,
+            }
+          : null,
+      staffFaculty:
+        user.role?.role_name === 'StaffFaculty'
+          ? {
+              user_prefix: user.staffFaculty?.user_prefix,
+              user_firstName: user.staffFaculty?.user_firstName,
+              user_lastName: user.staffFaculty?.user_lastName,
+              duty_name: user.staffFaculty?.duty_name,
+            }
+          : null,
+      staffDepartment:
+        user.role?.role_name === 'StaffDepartment'
+          ? {
+              user_prefix: user.staffDepartment?.user_prefix,
+              user_firstName: user.staffDepartment?.user_firstName,
+              user_lastName: user.staffDepartment?.user_lastName,
+              duty_name: user.staffDepartment?.duty_name,
+            }
+          : null,
       teacher:
         user.role?.role_name === 'Teacher'
           ? {
@@ -79,6 +124,12 @@ export class AuthService {
               duty_name: user.student?.duty_name,
               faculty_name: user.student?.faculty_name,
               department_name: user.student?.department_name,
+            }
+          : null,
+      store:
+        user.role?.role_name === 'Store'
+          ? {
+              store_name: user.store?.store_name,
             }
           : null,
     };
