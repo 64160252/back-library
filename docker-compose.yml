@@ -45,19 +45,5 @@ services:
       DB_DATABASE: bookfair_db
     command: ["npm", "run", "start:dev"]
 
-  # Vue.js Frontend
-  frontend:
-    build:
-      context: ./frontend   # **ให้แน่ใจว่าโฟลเดอร์ frontend มี Dockerfile**
-      dockerfile: Dockerfile
-    container_name: vue_app
-    restart: always
-    ports:
-      - "8040:80"   # **เปิด frontend ที่ port 8040**
-    depends_on:
-      - nestjs  
-    environment:
-      - VITE_API_URL=http://nestjs:3000  # เชื่อม backend โดยใช้ชื่อ service
-
 volumes:
   db_data:
