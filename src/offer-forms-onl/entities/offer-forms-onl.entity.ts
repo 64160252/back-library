@@ -1,3 +1,6 @@
+import { Department } from 'src/departments/entities/department.entity';
+import { Faculty } from 'src/faculties/entities/faculty.entity';
+import { Library } from 'src/library/entities/library.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
@@ -19,14 +22,29 @@ export class OfferFormsOnl {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @Column({ unique: true })
+  @Column()
+  user_id: number;
+
+  @Column()
   user_name: string;
 
   @Column()
   role_offer: string;
 
+  @ManyToOne(() => Library, (library) => library.offerFormsOnls, { eager: true })
+  @JoinColumn({ name: 'library_id' })
+  library: Library;
+
+  @ManyToOne(() => Faculty, (faculty) => faculty.offerFormsOnls, { eager: true })
+  @JoinColumn({ name: 'faculty_id' })
+  faculty: Faculty;
+
   @Column()
   faculty_name: string;
+
+  @ManyToOne(() => Department, (department) => department.offerFormsOnls, { eager: true })
+  @JoinColumn({ name: 'department_id' })
+  department: Department;
 
   @Column()
   department_name: string;
@@ -34,7 +52,7 @@ export class OfferFormsOnl {
   @Column({ default: 'ไม่พบอีเมล', nullable: true })
   user_email: string;
 
-  @Column({ default: 'ไม่พบเบอร์โทร', nullable: true, unique: true })
+  @Column({ default: 'ไม่พบเบอร์โทร', nullable: true })
   user_tel: string;
 
   @Column()
@@ -46,10 +64,16 @@ export class OfferFormsOnl {
   @Column()
   book_author: string;
 
-  @Column()
+  @Column({ default: 'ไม่ระบุ' })
   book_course: string;
 
-  @Column()
+  @Column({ default: 0 })
+  price: number;
+
+  @Column({ default: 'กำลังดำเนินการ' })
+  status: string;
+
+  @Column({ default: 'ไม่มีรายละเอียด' })
   form_description: string;
 
   @CreateDateColumn()

@@ -1,7 +1,8 @@
+import * as session from 'express-session';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
@@ -34,16 +35,10 @@ import { BookModule } from './books/books.module';
 import { OfferFormsOnl } from './offer-forms-onl/entities/offer-forms-onl.entity';
 import { OfferFormsOnlModule } from './offer-forms-onl/offer-forms-onl.module';
 import { OfferFormsOflModule } from './offer-forms-ofl/offer-forms-ofl.module';
+import { BookfairDateModule } from './bookfair-date/bookfair-date.module';
 
 @Module({
   imports: [
-    // ServeStaticModule.forRoot({
-    //   rootPath: join(__dirname, '..', 'src', 'images'), // ตั้งค่าเส้นทางไปยัง 'src/images'
-    //   serveRoot: '/images', // ตั้งค่า URL ที่ใช้เรียกไฟล์
-    // }),
-    // ConfigModule.forRoot({
-    //   isGlobal: true, // เพื่อให้ ConfigModule ใช้งานได้ทั่วทั้งโปรเจกต์
-    // }),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'db',
@@ -87,8 +82,10 @@ import { OfferFormsOflModule } from './offer-forms-ofl/offer-forms-ofl.module';
     BookModule,
     OfferFormsOnlModule,
     OfferFormsOflModule,
+    BookfairDateModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+}

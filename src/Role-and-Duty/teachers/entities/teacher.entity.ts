@@ -12,6 +12,7 @@ import {
 import { User } from 'src/users/entities/user.entity';
 import { Department } from 'src/departments/entities/department.entity';
 import { Faculty } from 'src/faculties/entities/faculty.entity';
+import { Library } from 'src/library/entities/library.entity';
 
 @Entity('teachers')
 export class Teacher {
@@ -33,7 +34,7 @@ export class Teacher {
   @Column({ default: null, nullable: true })
   duty_name: string;
 
-  @Column()
+  @Column({ default: 0 })
   e_coupon: number;
 
   @OneToOne(() => User, (user) => user.teacher, { cascade: true })
@@ -53,6 +54,10 @@ export class Teacher {
 
   @Column()
   department_name: string;
+
+  @ManyToOne(() => Library, (library) => library.teachers)
+  @JoinColumn({ name: 'library_id' })
+  library: Library;
 
   @CreateDateColumn()
   createdAt: Date;

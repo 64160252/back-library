@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class CreateTeacherDto {
   // ฟิลด์ที่เกี่ยวข้องกับ User
@@ -36,7 +36,8 @@ export class CreateTeacherDto {
   duty_name: string;
 
   @IsNumber()
-  e_coupon: number;
+  @IsOptional()
+  e_coupon?: number;
 
   @IsNumber()
   @IsNotEmpty()
@@ -50,3 +51,4 @@ export class CreateTeacherDto {
   @IsNotEmpty()
   department: number;
 }
+

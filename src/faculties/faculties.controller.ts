@@ -35,6 +35,14 @@ export class FacultiesController {
     return this.facultiesService.update(+id, updateFacultyDto);
   }
 
+  @Patch('library/:id')
+    libraryUpdate(
+      @Param('id') id: string,
+      @Body() updateFacultyDto: UpdateFacultyDto,
+    ) {
+      return this.facultiesService.libraryUpdate(+id, updateFacultyDto);
+    }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.facultiesService.remove(+id);

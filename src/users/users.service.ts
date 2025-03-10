@@ -18,7 +18,7 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
-  ) {}
+  ) { }
 
   // ฟังก์ชันสร้าง ผู้ใช้งาน
   async create(createUserDto: CreateUserDto): Promise<User> {

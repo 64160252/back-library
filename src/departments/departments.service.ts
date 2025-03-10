@@ -20,7 +20,7 @@ export class DepartmentsService {
     private readonly facultyRepository: Repository<Faculty>,
     @InjectRepository(Library)
     private readonly libraryRepository: Repository<Library>,
-  ) {}
+  ) { }
 
   // ฟังก์ชันสร้าง สาขา
   async create(
@@ -60,33 +60,54 @@ export class DepartmentsService {
   }
 
   // ฟังก์ชันค้นหา สาขา ตาม id
-  async findOne(departmentId: number): Promise<Department> {
+  async findOne(id: number): Promise<Department> {
     return await this.departmentRepository
       .createQueryBuilder('department')
-      .where('department.department_id = :departmentId', { departmentId })
+      .where('department.department_id = :id', { id })
       .getOne();
   }
 
-  // ฟังก์ชันแก้ไข เพิ่มงบประมาณสาขา หักจากงบประมาณคณะ
-  async libraryUpdate(
-    departmentId: number,
+  // ฟังก์ชันแก้ไข งบประมาณ
+  async update(
+    id: number,
     updateDepartmentDto: UpdateDepartmentDto,
   ): Promise<Department> {
     try {
       const department = await this.departmentRepository.findOne({
-        where: { department_id: departmentId },
+        where: { department_id: id },
+      });
+      if (!department) {
+        throw new NotFoundException(`Department with ID ${id} not found`);
+      }
+      const updatedDepartment = Object.assign(department, updateDepartmentDto);
+      return this.departmentRepository.save(updatedDepartment);
+    } catch (error) {
+      throw new BadRequestException(
+        `Failed to update Department: ${error.message}`,
+      );
+    }
+  }
+
+  // ฟังก์ชันแก้ไข เพิ่มงบประมาณสาขา หักจากงบประมาณหอสมุด
+  async libraryUpdate(
+    id: number,
+    updateDepartmentDto: UpdateDepartmentDto,
+  ): Promise<Department> {
+    try {
+      const department = await this.departmentRepository.findOne({
+        where: { department_id: id },
         relations: ['library'],
       });
 
       if (!department) {
         throw new NotFoundException(
-          `Department with ID ${departmentId} not found`,
+          `Department with ID ${id} not found`,
         );
       }
 
       if (!department.library) {
         throw new NotFoundException(
-          `Library for Department ID ${departmentId} not found`,
+          `Library for Department ID ${id} not found`,
         );
       }
 
@@ -121,7 +142,7 @@ export class DepartmentsService {
       await this.libraryRepository.save(library);
 
       const updatedDepartment = await this.departmentRepository.findOne({
-        where: { department_id: departmentId },
+        where: { department_id: id },
         relations: ['library'],
       });
 
@@ -133,26 +154,26 @@ export class DepartmentsService {
     }
   }
 
-  // ฟังก์ชันแก้ไข เพิ่มงบประมาณสาขา หักจากงบประมาณหอสมุด
+  // ฟังก์ชันแก้ไข เพิ่มงบประมาณสาขา หักจากงบประมาณคณะ
   async facultyUpdate(
-    departmentId: number,
+    id: number,
     updateDepartmentDto: UpdateDepartmentDto,
   ): Promise<Department> {
     try {
       const department = await this.departmentRepository.findOne({
-        where: { department_id: departmentId },
+        where: { department_id: id },
         relations: ['faculty'],
       });
 
       if (!department) {
         throw new NotFoundException(
-          `Department with ID ${departmentId} not found`,
+          `Department with ID ${id} not found`,
         );
       }
 
       if (!department.faculty) {
         throw new NotFoundException(
-          `Faculty for Department ID ${departmentId} not found`,
+          `Faculty for Department ID ${id} not found`,
         );
       }
 
@@ -187,7 +208,7 @@ export class DepartmentsService {
       await this.facultyRepository.save(faculty);
 
       const updatedDepartment = await this.departmentRepository.findOne({
-        where: { department_id: departmentId },
+        where: { department_id: id },
         relations: ['faculty'],
       });
 
@@ -200,14 +221,14 @@ export class DepartmentsService {
   }
 
   // ฟังก์ชันลบ สาขา
-  async remove(departmentId: number): Promise<Department> {
+  async remove(id: number): Promise<Department> {
     try {
       const department = await this.departmentRepository.findOne({
-        where: { department_id: departmentId },
+        where: { department_id: id },
       });
       if (!department) {
         throw new NotFoundException(
-          `Department with ID ${departmentId} not found.`,
+          `Department with ID ${id} not found.`,
         );
       }
       const deletedDepartment = Object.assign(department, UpdateDepartmentDto);

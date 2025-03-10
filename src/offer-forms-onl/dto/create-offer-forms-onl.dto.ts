@@ -30,4 +30,12 @@ export class CreateOfferFormsOnlDto {
   @IsNumber()
   @IsNotEmpty()
   user: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  faculty: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  department: number;
 }

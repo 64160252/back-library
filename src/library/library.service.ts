@@ -14,15 +14,17 @@ export class LibraryService {
   constructor(
     @InjectRepository(Library)
     private readonly libraryRepository: Repository<Library>,
-  ) {}
+  ) { }
 
   // ฟังก์ชันสร้าง งบประมาณ
   async create(createLibraryDto: CreateLibraryDto): Promise<Library> {
     const { budget_amount, ...libraryData } = createLibraryDto;
     try {
       const createdAt = new Date();
+      const currentYear = createdAt.getFullYear() + 543;
+      const currentMonth = createdAt.getMonth() + 1;
 
-      const budget_year = createdAt.getFullYear() + 543;
+      const budget_year = currentMonth >= 10 ? currentYear + 1 : currentYear;
 
       const existingLibrary = await this.libraryRepository.findOne({
         where: { budget_year },

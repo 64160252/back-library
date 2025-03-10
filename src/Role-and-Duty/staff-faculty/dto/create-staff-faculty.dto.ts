@@ -38,4 +38,12 @@ export class CreateStaffFacultyDto {
   @IsNumber()
   @IsNotEmpty()
   user: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  faculty: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  department: number;
 }

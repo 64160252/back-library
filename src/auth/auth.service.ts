@@ -113,6 +113,7 @@ export class AuthService {
               duty_name: user.teacher?.duty_name,
               faculty_name: user.teacher?.faculty_name,
               department_name: user.teacher?.department_name,
+              e_coupon: user.teacher?.e_coupon,
             }
           : null,
       student:

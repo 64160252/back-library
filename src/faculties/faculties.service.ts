@@ -17,7 +17,7 @@ export class FacultiesService {
     private readonly facultyRepository: Repository<Faculty>,
     @InjectRepository(Library)
     private readonly libraryRepository: Repository<Library>,
-  ) {}
+  ) { }
 
   // ฟังก์ชันสร้าง คณะ
   async create(createFacultyDto: CreateFacultyDto): Promise<Faculty> {
@@ -64,8 +64,29 @@ export class FacultiesService {
       .getOne();
   }
 
-  // ฟังก์ชันแก้ไข เพิ่มงบประมาณคณะ
+  // ฟังก์ชันแก้ไข งบประมาณ
   async update(
+    facultyId: number,
+    updateFacultyDto: UpdateFacultyDto,
+  ): Promise<Faculty> {
+    try {
+      const faculty = await this.facultyRepository.findOne({
+        where: { faculty_id: facultyId },
+      });
+      if (!faculty) {
+        throw new NotFoundException(`Faculty with ID ${facultyId} not found`);
+      }
+      const updatedFaculty = Object.assign(faculty, updateFacultyDto);
+      return this.facultyRepository.save(updatedFaculty);
+    } catch (error) {
+      throw new BadRequestException(
+        `Failed to update Faculty: ${error.message}`,
+      );
+    }
+  }
+
+  // ฟังก์ชันแก้ไข เพิ่มงบประมาณคณะ หักจากงบประมาณหอสมุด
+  async libraryUpdate(
     facultyId: number,
     updateFacultyDto: UpdateFacultyDto,
   ): Promise<Faculty> {

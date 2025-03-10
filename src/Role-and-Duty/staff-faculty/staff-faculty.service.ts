@@ -11,6 +11,8 @@ import { CreateStaffFacultyDto } from './dto/create-staff-faculty.dto';
 import { UpdateStaffFacultyDto } from './dto/update-staff-faculty.dto';
 import { Role } from 'src/roles/entities/role.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Department } from 'src/departments/entities/department.entity';
+import { Faculty } from 'src/faculties/entities/faculty.entity';
 
 @Injectable()
 export class StaffsFacultyService {
@@ -21,7 +23,11 @@ export class StaffsFacultyService {
     private readonly roleRepository: Repository<Role>,
     @InjectRepository(StaffFaculty)
     private readonly staffFacultyRepository: Repository<StaffFaculty>,
-  ) {}
+    @InjectRepository(Faculty)
+    private readonly facultyRepository: Repository<Faculty>,
+    @InjectRepository(Department)
+    private readonly departmentRepository: Repository<Department>,
+  ) { }
 
   // ฟังก์ชันสร้าง ผู้ใช้งาน (บุคลากรคณะ)
   async create(
@@ -36,6 +42,8 @@ export class StaffsFacultyService {
       user_firstName,
       user_lastName,
       duty_name,
+      faculty,
+      department,
       ...staffFacultyData
     } = createStaffFacultyDto;
 
@@ -73,6 +81,17 @@ export class StaffsFacultyService {
       });
       const savedUser = await this.userRepository.save(user);
 
+      const facultyEntity = await this.facultyRepository.findOne({
+        where: { faculty_id: faculty },
+      });
+
+      const departmentEntity = await this.departmentRepository.findOne({
+        where: {
+          department_id: department,
+          faculty: { faculty_id: faculty },
+        },
+      });
+
       const staffFaculty = this.staffFacultyRepository.create({
         ...staffFacultyData,
         user: savedUser,
@@ -80,6 +99,10 @@ export class StaffsFacultyService {
         user_firstName,
         user_lastName,
         duty_name,
+        faculty: facultyEntity,
+        faculty_name: facultyEntity.faculty_name,
+        department: departmentEntity,
+        department_name: departmentEntity.department_name,
       });
 
       return await this.staffFacultyRepository.save(staffFaculty);

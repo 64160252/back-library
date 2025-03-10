@@ -30,6 +30,11 @@ export class DepartmentsController {
     return this.departmentsService.findOne(+id);
   }
 
+  @Patch(':id')
+    update(@Param('id') id: string, @Body() updateDepartmentDto: UpdateDepartmentDto) {
+      return this.departmentsService.update(+id, updateDepartmentDto);
+    }
+
   @Patch('library/:id')
   libraryUpdate(
     @Param('id') id: string,

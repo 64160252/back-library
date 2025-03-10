@@ -1,8 +1,11 @@
+import { Department } from 'src/departments/entities/department.entity';
+import { Faculty } from 'src/faculties/entities/faculty.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   OneToOne,
+  ManyToOne,
   JoinColumn,
   CreateDateColumn,
   DeleteDateColumn,
@@ -30,6 +33,20 @@ export class StaffFaculty {
   @OneToOne(() => User, (user) => user.staffFaculty, { cascade: true })
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @ManyToOne(() => Faculty, (faculty) => faculty.staffsFaculty)
+  @JoinColumn({ name: 'faculty_id' })
+  faculty: Faculty;
+
+  @Column()
+  faculty_name: string;
+
+  @ManyToOne(() => Department, (department) => department.staffsFaculty)
+  @JoinColumn({ name: 'department_id' })
+  department: Department;
+
+  @Column()
+  department_name: string;
 
   @CreateDateColumn()
   createdAt: Date;

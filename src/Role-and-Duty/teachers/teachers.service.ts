@@ -13,6 +13,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Department } from 'src/departments/entities/department.entity';
 import { Faculty } from 'src/faculties/entities/faculty.entity';
 import { Role } from 'src/roles/entities/role.entity';
+import { Library } from 'src/library/entities/library.entity';
 
 @Injectable()
 export class TeachersService {
@@ -23,11 +24,13 @@ export class TeachersService {
     private readonly roleRepository: Repository<Role>,
     @InjectRepository(Teacher)
     private readonly teacherRepository: Repository<Teacher>,
+    @InjectRepository(Library)
+    private readonly libraryRepository: Repository<Library>,
     @InjectRepository(Faculty)
     private readonly facultyRepository: Repository<Faculty>,
     @InjectRepository(Department)
     private readonly departmentRepository: Repository<Department>,
-  ) {}
+  ) { }
 
   // ฟังก์ชันสร้าง ผู้ใช้งาน (อาจารย์)
   async create(createTeacherDto: CreateTeacherDto): Promise<Teacher> {
@@ -97,7 +100,7 @@ export class TeachersService {
         user_lastName,
         role_offer: role_offer,
         duty_name,
-        e_coupon,
+        e_coupon: createTeacherDto.e_coupon ?? 0,
         faculty: facultyEntity,
         faculty_name: facultyEntity.faculty_name,
         department: departmentEntity,
@@ -148,18 +151,222 @@ export class TeachersService {
       .getOne();
   }
 
-  // ฟังก์ชันแก้ไข ผู้ใช้งาน (อาจารย์)
-  async update(id: number, updateTeacherDto: UpdateTeacherDto) {
-    const teacher = await this.teacherRepository.findOne({
-      where: { teacher_id: id },
-      relations: ['user'],
-    });
-    if (!teacher) {
-      throw new NotFoundException(`Teacher with id ${id} not found`);
+  // ฟังก์ชันแก้ไข คูปอง
+    async update(
+      id: number,
+      updateTeacherDto: UpdateTeacherDto,
+    ): Promise<Teacher> {
+      try {
+        const teacher = await this.teacherRepository.findOne({
+          where: { teacher_id: id },
+        });
+        if (!teacher) {
+          throw new NotFoundException(`Teacher with ID ${id} not found`);
+        }
+        const updatedTeacher = Object.assign(teacher, updateTeacherDto);
+        return this.teacherRepository.save(updatedTeacher);
+      } catch (error) {
+        throw new BadRequestException(
+          `Failed to update Teacher: ${error.message}`,
+        );
+      }
     }
 
-    const updatedTeacher = Object.assign(teacher, updateTeacherDto);
-    return this.teacherRepository.save(updatedTeacher);
+  // ฟังก์ชันแก้ไข เพิ่มคูปอง หักจากงบประมาณหอสมุด
+  async libraryUpdate(
+    id: number, updateTeacherDto: UpdateTeacherDto,
+  ): Promise<Teacher> {
+    try {
+      const teacher = await this.teacherRepository.findOne({
+        where: { teacher_id: id },
+        relations: ['library'],
+      });
+
+      if (!teacher) {
+        throw new NotFoundException(
+          `Teacher with ID ${id} not found`,
+        );
+      }
+
+      if (!teacher.library) {
+        throw new NotFoundException(
+          `Library for Teacher ID ${id} not found`,
+        );
+      }
+
+      if (updateTeacherDto.e_coupon === undefined) {
+        throw new BadRequestException(`e_coupon is required`);
+      }
+
+      const eCouponDiff =
+        updateTeacherDto.e_coupon - (teacher.e_coupon || 0);
+
+      const library = await this.libraryRepository
+        .createQueryBuilder('library')
+        .where('library.library_id = :libraryId', {
+          libraryId: teacher.library.library_id,
+        })
+        .getOne();
+
+      if (!library) {
+        throw new NotFoundException(
+          `Library with ID ${teacher.library.library_id} not found`,
+        );
+      }
+
+      if (eCouponDiff > library.budget_amount) {
+        throw new BadRequestException(`Not enough budget to allocate`);
+      }
+
+      teacher.e_coupon = updateTeacherDto.e_coupon;
+      library.budget_amount -= eCouponDiff;
+
+      await this.teacherRepository.save(teacher);
+      await this.libraryRepository.save(library);
+
+      const updatedTeacher = await this.teacherRepository.findOne({
+        where: { teacher_id: id },
+        relations: ['library'],
+      });
+
+      return updatedTeacher;
+    } catch (error) {
+      throw new BadRequestException(
+        `Failed to update Teacher: ${error.message}`,
+      );
+    }
+  }
+
+  // ฟังก์ชันแก้ไข เพิ่มคูปอง หักจากงบประมาณคณะ
+  async facultyUpdate(
+    id: number,
+    updateTeacherDto: UpdateTeacherDto,
+  ): Promise<Teacher> {
+    try {
+      const teacher = await this.teacherRepository.findOne({
+        where: { teacher_id: id },
+        relations: ['faculty'],
+      });
+
+      if (!teacher) {
+        throw new NotFoundException(
+          `Teacher with ID ${id} not found`,
+        );
+      }
+
+      if (!teacher.faculty) {
+        throw new NotFoundException(
+          `Faculty for Teacher ID ${id} not found`,
+        );
+      }
+
+      if (updateTeacherDto.e_coupon === undefined) {
+        throw new BadRequestException(`e_coupon is required`);
+      }
+
+      const eCouponDiff =
+        updateTeacherDto.e_coupon - (teacher.e_coupon || 0);
+
+      const faculty = await this.facultyRepository
+        .createQueryBuilder('faculty')
+        .where('faculty.faculty_id = :facultyId', {
+          facultyId: teacher.faculty.faculty_id,
+        })
+        .getOne();
+
+      if (!faculty) {
+        throw new NotFoundException(
+          `Faculty with ID ${teacher.faculty.faculty_id} not found`,
+        );
+      }
+
+      if (eCouponDiff > faculty.e_coupon) {
+        throw new BadRequestException(`Not enough budget to allocate`);
+      }
+
+      teacher.e_coupon = updateTeacherDto.e_coupon;
+      faculty.e_coupon -= eCouponDiff;
+
+      await this.teacherRepository.save(teacher);
+      await this.facultyRepository.save(faculty);
+
+      const updatedTeacher = await this.teacherRepository.findOne({
+        where: { teacher_id: id },
+        relations: ['faculty'],
+      });
+
+      return updatedTeacher;
+    } catch (error) {
+      throw new BadRequestException(
+        `Failed to update Teacher: ${error.message}`,
+      );
+    }
+  }
+
+  // ฟังก์ชันแก้ไข เพิ่มคูปอง หักจากงบประมาณสาขา
+  async departmentUpdate(
+    id: number,
+    updateTeacherDto: UpdateTeacherDto,
+  ): Promise<Teacher> {
+    try {
+      const teacher = await this.teacherRepository.findOne({
+        where: { teacher_id: id },
+        relations: ['department'],
+      });
+
+      if (!teacher) {
+        throw new NotFoundException(
+          `Teacher with ID ${id} not found`,
+        );
+      }
+
+      if (!teacher.department) {
+        throw new NotFoundException(
+          `Department for Teacher ID ${id} not found`,
+        );
+      }
+
+      if (updateTeacherDto.e_coupon === undefined) {
+        throw new BadRequestException(`e_coupon is required`);
+      }
+
+      const eCouponDiff =
+        updateTeacherDto.e_coupon - (teacher.e_coupon || 0);
+
+      const department = await this.departmentRepository
+        .createQueryBuilder('department')
+        .where('department.department_id = :departmentId', {
+          departmentId: teacher.department.department_id,
+        })
+        .getOne();
+
+      if (!department) {
+        throw new NotFoundException(
+          `Department with ID ${teacher.department.department_id} not found`,
+        );
+      }
+
+      if (eCouponDiff > department.e_coupon) {
+        throw new BadRequestException(`Not enough budget to allocate`);
+      }
+
+      teacher.e_coupon = updateTeacherDto.e_coupon;
+      department.e_coupon -= eCouponDiff;
+
+      await this.teacherRepository.save(teacher);
+      await this.departmentRepository.save(department);
+
+      const updatedTeacher = await this.teacherRepository.findOne({
+        where: { teacher_id: id },
+        relations: ['department'],
+      });
+
+      return updatedTeacher;
+    } catch (error) {
+      throw new BadRequestException(
+        `Failed to update Teacher: ${error.message}`,
+      );
+    }
   }
 
   // ฟังก์ชันลบ ผู้ใช้งาน (อาจารย์)

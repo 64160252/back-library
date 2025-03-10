@@ -13,19 +13,22 @@ import { OfferFormsOnlService } from './offer-forms-onl.service';
 import { CreateOfferFormsOnlDto } from './dto/create-offer-forms-onl.dto';
 import { UpdateOfferFormsOnlDto } from './dto/update-offer-forms-onl.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 
 @Controller('offer-forms-onl')
 export class OfferFormsOnlController {
-  constructor(private readonly offerFormsOnlService: OfferFormsOnlService) {}
+  constructor(private readonly offerFormsOnlService: OfferFormsOnlService) { }
 
   @Post()
   @UseGuards(JwtAuthGuard)
   async create(
     @Body() createOfferFormsOnlDto: CreateOfferFormsOnlDto,
     @Request() req,
+    @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.offerFormsOnlService.create(createOfferFormsOnlDto, req);
+    return this.offerFormsOnlService.create(createOfferFormsOnlDto, req, updateUserDto);
   }
+
 
   @Get()
   findAll() {
