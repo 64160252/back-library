@@ -85,13 +85,25 @@ export class StoresService {
     }
   }
 
-  // ฟังก์ชันค้นหา ผู้ใช้งาน ทั้งหมด (นิสิต)
+  // ฟังก์ชันค้นหา ผู้ใช้งาน ทั้งหมด (ร้านค้า)
   async findAll() {
     return await this.storeRepository
       .createQueryBuilder('store')
       .leftJoinAndSelect('store.user', 'user')
+      .leftJoinAndSelect('store.books', 'book')
       .select([
         'store.store_id',
+        'store.store_name',
+        'book.book_id',
+        'book.ISBN',
+        'book.book_title',
+        'book.book_author',
+        'book.book_price',
+        'book.book_category',
+        'book.book_published',
+        'book.book_volumn',
+        'book.book_description',
+        'book.book_status',
         'user.user_id',
         'user.user_name',
         'user.user_email',
@@ -100,13 +112,25 @@ export class StoresService {
       .getMany();
   }
 
-  // ฟังก์ชันค้นหา ผู้ใช้งาน ตาม id (นิสิต)
+  // ฟังก์ชันค้นหา ผู้ใช้งาน ตาม id (ร้านค้า)
   async findOne(id: number) {
     return await this.storeRepository
       .createQueryBuilder('store')
       .leftJoinAndSelect('store.user', 'user')
+      .leftJoinAndSelect('store.books', 'book')
       .select([
         'store.store_id',
+        'store.store_name',
+        'book.book_id',
+        'book.ISBN',
+        'book.book_title',
+        'book.book_author',
+        'book.book_price',
+        'book.book_category',
+        'book.book_published',
+        'book.book_volumn',
+        'book.book_description',
+        'book.book_status',
         'user.user_id',
         'user.user_name',
         'user.user_email',
@@ -116,7 +140,7 @@ export class StoresService {
       .getOne();
   }
 
-  // ฟังก์ชันแก้ไข ผู้ใช้งาน (นิสิต)
+  // ฟังก์ชันแก้ไข ผู้ใช้งาน (ร้านค้า)
   async update(id: number, updateStoreDto: UpdateStoreDto) {
     const store = await this.storeRepository.findOne({
       where: { store_id: id },
@@ -130,7 +154,7 @@ export class StoresService {
     return this.storeRepository.save(updatedstore);
   }
 
-  // ฟังก์ชันลบ ผู้ใช้งาน (นิสิต)
+  // ฟังก์ชันลบ ผู้ใช้งาน (ร้านค้า)
   async remove(id: number) {
     const store = await this.storeRepository.findOne({
       where: { store_id: id },

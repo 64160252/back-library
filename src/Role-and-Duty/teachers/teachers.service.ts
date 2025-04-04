@@ -44,6 +44,7 @@ export class TeachersService {
       user_lastName,
       duty_name,
       e_coupon,
+      library,
       faculty,
       department,
       ...teacherData
@@ -84,6 +85,10 @@ export class TeachersService {
       });
       const savedUser = await this.userRepository.save(user);
 
+      const libraryEntity = await this.libraryRepository.findOne({
+        where: { library_id: library },
+      });
+
       const facultyEntity = await this.facultyRepository.findOne({
         where: { faculty_id: faculty },
       });
@@ -101,6 +106,7 @@ export class TeachersService {
         role_offer: role_offer,
         duty_name,
         e_coupon: createTeacherDto.e_coupon ?? 0,
+        library: libraryEntity,
         faculty: facultyEntity,
         faculty_name: facultyEntity.faculty_name,
         department: departmentEntity,
@@ -127,6 +133,12 @@ export class TeachersService {
       .leftJoinAndSelect('teacher.user', 'user')
       .select([
         'teacher.teacher_id',
+        'teacher.user_prefix',
+        'teacher.user_firstName',
+        'teacher.user_lastName',
+        'teacher.e_coupon',
+        'teacher.faculty_name',
+        'teacher.department_name',
         'user.user_id',
         'user.user_name',
         'user.user_email',
@@ -142,6 +154,12 @@ export class TeachersService {
       .leftJoinAndSelect('teacher.user', 'user')
       .select([
         'teacher.teacher_id',
+        'teacher.user_prefix',
+        'teacher.user_firstName',
+        'teacher.user_lastName',
+        'teacher.e_coupon',
+        'teacher.faculty_name',
+        'teacher.department_name',
         'user.user_id',
         'user.user_name',
         'user.user_email',
@@ -181,61 +199,54 @@ export class TeachersService {
         where: { teacher_id: id },
         relations: ['library'],
       });
-
+  
       if (!teacher) {
         throw new NotFoundException(
           `Teacher with ID ${id} not found`,
         );
       }
-
+  
       if (!teacher.library) {
         throw new NotFoundException(
           `Library for Teacher ID ${id} not found`,
         );
       }
-
-      if (updateTeacherDto.e_coupon === undefined) {
+  
+      if (updateTeacherDto.e_coupon === undefined || updateTeacherDto.e_coupon === null) {
         throw new BadRequestException(`e_coupon is required`);
       }
-
-      const eCouponDiff =
-        updateTeacherDto.e_coupon - (teacher.e_coupon || 0);
-
-      const library = await this.libraryRepository
-        .createQueryBuilder('library')
-        .where('library.library_id = :libraryId', {
-          libraryId: teacher.library.library_id,
-        })
-        .getOne();
-
-      if (!library) {
-        throw new NotFoundException(
-          `Library with ID ${teacher.library.library_id} not found`,
-        );
-      }
-
-      if (eCouponDiff > library.budget_amount) {
+  
+      // ป้องกัน NULL ด้วยค่าเริ่มต้น
+      const currentECoupon = teacher.e_coupon ?? 0;
+      const currentBudgetRemain = teacher.library.budget_remain ?? 0;
+      const currentBudgetUsed = teacher.library.budget_used ?? 0;
+  
+      const eCouponDiff = updateTeacherDto.e_coupon - currentECoupon;
+  
+      if (eCouponDiff > currentBudgetRemain) {
         throw new BadRequestException(`Not enough budget to allocate`);
       }
-
+  
+      // อัปเดตค่าต่าง ๆ
       teacher.e_coupon = updateTeacherDto.e_coupon;
-      library.budget_amount -= eCouponDiff;
-
+      teacher.library.budget_remain = currentBudgetRemain - eCouponDiff;
+      teacher.library.budget_used = currentBudgetUsed + eCouponDiff;
+  
       await this.teacherRepository.save(teacher);
-      await this.libraryRepository.save(library);
-
+      await this.libraryRepository.save(teacher.library);
+  
       const updatedTeacher = await this.teacherRepository.findOne({
         where: { teacher_id: id },
         relations: ['library'],
       });
-
+  
       return updatedTeacher;
     } catch (error) {
       throw new BadRequestException(
         `Failed to update Teacher: ${error.message}`,
       );
     }
-  }
+  }  
 
   // ฟังก์ชันแก้ไข เพิ่มคูปอง หักจากงบประมาณคณะ
   async facultyUpdate(

@@ -45,6 +45,10 @@ export class CreateTeacherDto {
 
   @IsNumber()
   @IsNotEmpty()
+  library: number;
+
+  @IsNumber()
+  @IsNotEmpty()
   faculty: number;
 
   @IsNumber()

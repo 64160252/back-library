@@ -20,6 +20,7 @@ import { Teacher } from 'src/Role-and-Duty/teachers/entities/teacher.entity';
 import { Student } from 'src/Role-and-Duty/student/entities/student.entity';
 import { Store } from 'src/Role-and-Duty/store/entities/store.entity';
 import { OfferFormsOnl } from 'src/offer-forms-onl/entities/offer-forms-onl.entity';
+import { OfferFormsOfl } from 'src/offer-forms-ofl/entities/offer-forms-ofl.entity';
 
 @Entity('users')
 export class User {
@@ -69,11 +70,14 @@ export class User {
   @OneToOne(() => Store, (store) => store.user)
   store: Store;
 
-  @Column({ nullable: true, length: 1024 })
+  @Column({ nullable: true, length: 4096 })
   refresh_token: string;
 
   @OneToMany(() => OfferFormsOnl, (offerFormsOnls) => offerFormsOnls.user)
   offerFormsOnls: OfferFormsOnl[];
+
+  @OneToMany(() => OfferFormsOfl, (offerFormsOfls) => offerFormsOfls.user)
+  offerFormsOfls: OfferFormsOfl[];
 
   @CreateDateColumn()
   createdAt: Date;

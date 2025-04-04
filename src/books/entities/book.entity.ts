@@ -1,7 +1,9 @@
+import { OfferFormsOfl } from 'src/offer-forms-ofl/entities/offer-forms-ofl.entity';
 import { Store } from 'src/Role-and-Duty/store/entities/store.entity';
 import {
   Entity,
   ManyToOne,
+  OneToMany,
   JoinColumn,
   CreateDateColumn,
   DeleteDateColumn,
@@ -33,9 +35,21 @@ export class Book {
   @Column()
   book_published: string;
 
+  @Column()
+  book_volumn: number;
+
+  @Column({ default: 'ไม่มีรายละเอียด' })
+  book_description: string;
+
+  @Column({ default: 'ยังไม่ขาย' })
+  book_status: string;
+
   @ManyToOne(() => Store, (store) => store.books, { eager: true })
   @JoinColumn({ name: 'store_id' })
   store: Store;
+
+  @OneToMany(() => OfferFormsOfl, (offerFormsOfls) => offerFormsOfls.book)
+  offerFormsOfls: OfferFormsOfl[];
 
   @Column()
   store_name: string;

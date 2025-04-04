@@ -34,11 +34,16 @@ import { Book } from './books/entities/book.entity';
 import { BookModule } from './books/books.module';
 import { OfferFormsOnl } from './offer-forms-onl/entities/offer-forms-onl.entity';
 import { OfferFormsOnlModule } from './offer-forms-onl/offer-forms-onl.module';
+import { OfferFormsOfl } from './offer-forms-ofl/entities/offer-forms-ofl.entity';
 import { OfferFormsOflModule } from './offer-forms-ofl/offer-forms-ofl.module';
 import { BookfairDateModule } from './bookfair-date/bookfair-date.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
+    MulterModule.register({
+      dest: './uploads', // กำหนดที่เก็บไฟล์
+    }),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'db',
@@ -62,6 +67,7 @@ import { BookfairDateModule } from './bookfair-date/bookfair-date.module';
         Store,
         Book,
         OfferFormsOnl,
+        OfferFormsOfl,
       ],
       synchronize: true,
     }),

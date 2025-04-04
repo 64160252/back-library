@@ -98,61 +98,54 @@ export class DepartmentsService {
         where: { department_id: id },
         relations: ['library'],
       });
-
+  
       if (!department) {
         throw new NotFoundException(
           `Department with ID ${id} not found`,
         );
       }
-
+  
       if (!department.library) {
         throw new NotFoundException(
           `Library for Department ID ${id} not found`,
         );
       }
-
-      if (updateDepartmentDto.e_coupon === undefined) {
+  
+      if (updateDepartmentDto.e_coupon === undefined || updateDepartmentDto.e_coupon === null) {
         throw new BadRequestException(`e_coupon is required`);
       }
-
-      const eCouponDiff =
-        updateDepartmentDto.e_coupon - (department.e_coupon || 0);
-
-      const library = await this.libraryRepository
-        .createQueryBuilder('library')
-        .where('library.library_id = :libraryId', {
-          libraryId: department.library.library_id,
-        })
-        .getOne();
-
-      if (!library) {
-        throw new NotFoundException(
-          `Library with ID ${department.library.library_id} not found`,
-        );
-      }
-
-      if (eCouponDiff > library.budget_amount) {
+  
+      // ป้องกัน NULL ด้วยค่าเริ่มต้น
+      const currentECoupon = department.e_coupon ?? 0;
+      const currentBudgetRemain = department.library.budget_remain ?? 0;
+      const currentBudgetUsed = department.library.budget_used ?? 0;
+  
+      const eCouponDiff = updateDepartmentDto.e_coupon - currentECoupon;
+  
+      if (eCouponDiff > currentBudgetRemain) {
         throw new BadRequestException(`Not enough budget to allocate`);
       }
-
+  
+      // อัปเดตค่าต่าง ๆ
       department.e_coupon = updateDepartmentDto.e_coupon;
-      library.budget_amount -= eCouponDiff;
-
+      department.library.budget_remain = currentBudgetRemain - eCouponDiff;
+      department.library.budget_used = currentBudgetUsed + eCouponDiff;
+  
       await this.departmentRepository.save(department);
-      await this.libraryRepository.save(library);
-
+      await this.libraryRepository.save(department.library);
+  
       const updatedDepartment = await this.departmentRepository.findOne({
         where: { department_id: id },
         relations: ['library'],
       });
-
+  
       return updatedDepartment;
     } catch (error) {
       throw new BadRequestException(
         `Failed to update Department: ${error.message}`,
       );
     }
-  }
+  }  
 
   // ฟังก์ชันแก้ไข เพิ่มงบประมาณสาขา หักจากงบประมาณคณะ
   async facultyUpdate(

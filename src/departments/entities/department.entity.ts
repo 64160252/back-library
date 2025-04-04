@@ -15,6 +15,7 @@ import { Library } from 'src/library/entities/library.entity';
 import { Student } from 'src/Role-and-Duty/student/entities/student.entity';
 import { StaffFaculty } from 'src/Role-and-Duty/staff-faculty/entities/staff-faculty.entity';
 import { OfferFormsOnl } from 'src/offer-forms-onl/entities/offer-forms-onl.entity';
+import { OfferFormsOfl } from 'src/offer-forms-ofl/entities/offer-forms-ofl.entity';
 
 @Entity('departments')
 export class Department {
@@ -38,6 +39,9 @@ export class Department {
   @Column()
   e_coupon: number;
 
+  @Column({ default: 0 })
+  budget_count: number;
+
   @OneToMany(() => StaffFaculty, (staffsFaculty) => staffsFaculty.department)
   staffsFaculty: StaffFaculty[];
 
@@ -49,6 +53,9 @@ export class Department {
 
   @OneToMany(() => OfferFormsOnl, (offerFormsOnls) => offerFormsOnls.department)
   offerFormsOnls: OfferFormsOnl[];
+
+  @OneToMany(() => OfferFormsOfl, (offerFormsOfls) => offerFormsOfls.department)
+  offerFormsOfls: OfferFormsOfl[];
 
   @CreateDateColumn()
   createdAt: Date;

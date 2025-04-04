@@ -39,6 +39,8 @@ export class LibraryService {
       const library = this.libraryRepository.create({
         ...libraryData,
         budget_amount,
+        budget_used: 0,
+        budget_remain: budget_amount,
         budget_year,
       });
       const savedLibrary = await this.libraryRepository.save(library);

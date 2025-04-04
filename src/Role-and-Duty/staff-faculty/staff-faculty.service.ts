@@ -123,12 +123,24 @@ export class StaffsFacultyService {
     return await this.staffFacultyRepository
       .createQueryBuilder('staffFaculty')
       .leftJoinAndSelect('staffFaculty.user', 'user')
+      .leftJoinAndSelect('staffFaculty.faculty', 'faculty')
+      .leftJoinAndSelect('staffFaculty.department', 'department')
       .select([
         'staffFaculty.staffs_faculty_id',
+        'staffFaculty.user_prefix',
+        'staffFaculty.user_firstName',
+        'staffFaculty.user_lastName',
+        'staffFaculty.duty_name',
+        'staffFaculty.faculty_name',
+        'staffFaculty.department_name',
         'user.user_id',
         'user.user_name',
         'user.user_email',
         'user.user_tel',
+        'faculty.faculty_id',
+        'faculty.faculty_name',
+        'department.department_id',
+        'department.department_name',
       ])
       .getMany();
   }
@@ -138,17 +150,29 @@ export class StaffsFacultyService {
     return await this.staffFacultyRepository
       .createQueryBuilder('staffFaculty')
       .leftJoinAndSelect('staffFaculty.user', 'user')
+      .leftJoinAndSelect('staffFaculty.faculty', 'faculty')
+      .leftJoinAndSelect('staffFaculty.department', 'department')
       .select([
         'staffFaculty.staffs_faculty_id',
+        'staffFaculty.user_prefix',
+        'staffFaculty.user_firstName',
+        'staffFaculty.user_lastName',
+        'staffFaculty.duty_name',
+        'staffFaculty.faculty_name',
+        'staffFaculty.department_name',
         'user.user_id',
         'user.user_name',
         'user.user_email',
         'user.user_tel',
+        'faculty.faculty_id',
+        'faculty.faculty_name',
+        'department.department_id',
+        'department.department_name',
       ])
       .where('staffFaculty.staffs_faculty_id = :id', { id })
       .getOne();
   }
-
+  
   // ฟังก์ชันแก้ไข ผู้ใช้งาน (บุคลากรคณะ)
   async update(id: number, updateStaffFacultyDto: UpdateStaffFacultyDto) {
     const staffFaculty = await this.staffFacultyRepository.findOne({

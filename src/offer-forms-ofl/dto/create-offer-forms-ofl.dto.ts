@@ -8,6 +8,10 @@ import {
 
 export class CreateOfferFormsOflDto {
   @IsNotEmpty()
+  @IsISBN()
+  ISBN: string;
+
+  @IsNotEmpty()
   @IsString()
   book_title: string;
 
@@ -15,29 +19,25 @@ export class CreateOfferFormsOflDto {
   @IsString()
   book_author: string;
 
-  @IsNotEmpty()
-  @IsNumber()
-  published_year: number;
-
-  @IsNotEmpty()
-  @IsISBN()
-  ISBN: string;
-
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  book_subject: string;
-
-  @IsNotEmpty()
-  @IsNumber()
-  book_price: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  book_quantity: number;
+  book_course: string;
 
   @IsOptional()
   @IsString()
-  book_category: string;
+  form_description: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  user: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  faculty: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  department: number;
 
   @IsNumber()
   @IsNotEmpty()
@@ -45,5 +45,9 @@ export class CreateOfferFormsOflDto {
 
   @IsNumber()
   @IsNotEmpty()
-  user: number;
+  book: number;
+
+  @IsOptional()
+  @IsString()
+  imgs: string;
 }

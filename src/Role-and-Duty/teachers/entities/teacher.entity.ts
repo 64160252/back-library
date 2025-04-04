@@ -41,14 +41,14 @@ export class Teacher {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => Faculty, (faculty) => faculty.teachers)
+  @ManyToOne(() => Faculty, (faculty) => faculty.teachers, { eager: true })
   @JoinColumn({ name: 'faculty_id' })
   faculty: Faculty;
 
   @Column()
   faculty_name: string;
 
-  @ManyToOne(() => Department, (department) => department.teachers)
+  @ManyToOne(() => Department, (department) => department.teachers, { eager: true })
   @JoinColumn({ name: 'department_id' })
   department: Department;
 
